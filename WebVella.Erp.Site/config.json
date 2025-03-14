@@ -1,23 +1,23 @@
 ﻿{
 	"Settings": {
-		"ConnectionString": "Server=192.168.0.190;Port=5436;User Id=test;Password=test;Database=erp3_base;Pooling=true;MinPoolSize=1;MaxPoolSize=100;CommandTimeout=120;",
+		"ConnectionString": "Server=localhost;Port=5332;User Id=test;Password=test;Database=bank;Pooling=true;MinPoolSize=1;MaxPoolSize=100;CommandTimeout=120;",
 		"EncryptionKey": "BC93B776A42877CFEE808823BA8B37C83B6B0AD23198AC3AF2B5A54DCB647658",
-		"Lang": "en",
-		"Locale": "en-US",
-		"TimeZoneName": "FLE Standard Time",
+		"Lang": "pl",
+		"Locale": "pl-PL",
+		"TimeZoneName": "Central European Standard Time",
 		"CacheKey": "", //if empty current date will be used 
 		"DevelopmentMode": "true",
 		"EnableBackgroundJobs": "false",
 		"EnableFileSystemStorage": "false",
 		"FileSystemStorageFolder": "\\\\192.168.0.2\\Share\\erp3-files",
 		"EmailEnabled": false,
-		"EmailSMTPServerName": "",
-		"EmailSMTPPort": "25",
-		"EmailSMTPUsername": "",
-		"EmailSMTPPassword": "",
-		"EmailFrom": "",
+		"EmailSMTPServerName": "lifeaid.pl",
+		"EmailSMTPPort": "465",
+		"EmailSMTPUsername": "noreply@lifeaid.pl",
+		"EmailSMTPPassword": "lifeaid2025SKLEP",
+		"EmailFrom": "noreply@lifeaid.pl",
 		"EmailTo": "",
-		"AppName": "WebVella Next",
+		"AppName": "Reomi Next",
 		"NavLogoUrl": "",
 		"SystemMasterBackgroundImageUrl": "",
 		"Jwt": {
@@ -31,6 +31,6 @@
 		"TestRecordId": "001ea36f-fd2e-4d1b-b8ee-25d32d4e396c"
 	},
 	"ApiUrlTemplates": {
-		"FieldInlineEdit": "/api/v3/en_US/record/{entityName}/{recordId}"
+		"FieldInlineEdit": "/api/v3/pl_PL/record/{entityName}/{recordId}"
 	}
 }
