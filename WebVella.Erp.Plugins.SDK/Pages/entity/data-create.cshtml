@@ -176,7 +176,8 @@
 
 						case FieldType.DateTimeField:
 							{
-								<wv-field-datetime mode="Form"
+                                <wv-field-datetime mode="Form"
+                                                   timezone-name="@ErpSettings.TimeZoneName"
 												   name="@field.Name"
 												   label-text="@field.Label"
 												   label-help-text="@field.HelpText"
