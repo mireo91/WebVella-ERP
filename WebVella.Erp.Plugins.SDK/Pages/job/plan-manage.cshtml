@@ -37,10 +37,10 @@
 		</wv-row>
 		<wv-row>
 			<wv-column span="6">
-				<wv-field-datetime label-text="Start Date" value="@Model.StartDate" name="StartDate"></wv-field-datetime>
+				<wv-field-datetime timezone-name="@ErpSettings.TimeZoneName" label-text="Start Date" value="@Model.StartDate" name="StartDate"></wv-field-datetime>
 			</wv-column>
 			<wv-column span="6">
-				<wv-field-datetime label-text="End Date" value="@Model.EndDate" name="EndDate"></wv-field-datetime>
+				<wv-field-datetime timezone-name="@ErpSettings.TimeZoneName" label-text="End Date" value="@Model.EndDate" name="EndDate"></wv-field-datetime>
 			</wv-column>
 		</wv-row>
 		<wv-row>
@@ -48,7 +48,7 @@
 				<wv-field-select label-text="Type" value="@Model.Type" name="Type" options="Model.SchedulePlanTypeOptions.ToWvSelectOption()"></wv-field-select>
 			</wv-column>
 			<wv-column span="6">
-				<wv-field-datetime access="ReadOnly" label-text="Next Trigger" value="@Model.NextTriggerTime" name="NextTriggerTime"></wv-field-datetime>
+				<wv-field-datetime timezone-name="@ErpSettings.TimeZoneName" access="ReadOnly" label-text="Next Trigger" value="@Model.NextTriggerTime" name="NextTriggerTime"></wv-field-datetime>
 			</wv-column>
 		</wv-row>
 		<wv-row>

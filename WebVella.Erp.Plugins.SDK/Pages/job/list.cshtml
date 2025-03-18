@@ -41,13 +41,13 @@
                 </wv-modal>
             </wv-grid-column>
             <wv-grid-column>
-                <wv-field-datetime label-mode="Hidden" mode="Simple" value="@(record.CreatedOn.ConvertToAppDate())"></wv-field-datetime>
+                <wv-field-datetime timezone-name="@ErpSettings.TimeZoneName" label-mode="Hidden" mode="Simple" value="@(record.CreatedOn.ConvertToAppDate())"></wv-field-datetime>
             </wv-grid-column>
             <wv-grid-column>
-                <wv-field-datetime label-mode="Hidden" mode="Simple" value="@(record.StartedOn.ConvertToAppDate())"></wv-field-datetime>
+                <wv-field-datetime timezone-name="@ErpSettings.TimeZoneName" label-mode="Hidden" mode="Simple" value="@(record.StartedOn.ConvertToAppDate())"></wv-field-datetime>
             </wv-grid-column>
             <wv-grid-column>
-                <wv-field-datetime label-mode="Hidden" mode="Simple" value="@(record.FinishedOn.ConvertToAppDate())"></wv-field-datetime>
+                <wv-field-datetime timezone-name="@ErpSettings.TimeZoneName" label-mode="Hidden" mode="Simple" value="@(record.FinishedOn.ConvertToAppDate())"></wv-field-datetime>
             </wv-grid-column>
             <wv-grid-column>
                 @record.TypeName
