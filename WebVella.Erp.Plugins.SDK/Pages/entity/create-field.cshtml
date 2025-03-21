@@ -151,7 +151,7 @@
             case FieldType.DateTimeField:
                 <wv-row>
                     <wv-column span="6">
-                        <wv-field-datetime name="DefaultValue" value="Model.DefaultValue" label-text="Default Value" placeholder="e.g. 2014-11-01 23:01"></wv-field-datetime>
+                        <wv-field-datetime timezone-name="@ErpSettings.TimeZoneName" name="DefaultValue" value="Model.DefaultValue" label-text="Default Value" placeholder="e.g. 2014-11-01 23:01"></wv-field-datetime>
                     </wv-column>
                     <wv-column span="6">
                         <wv-field-text name="Format" value="Model.Format" label-text="Presentation format" placeholder="e.g. yyyy-MMM-dd HH:mm"></wv-field-text>

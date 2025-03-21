@@ -156,7 +156,7 @@
                     var fieldCasted = (DateTimeField)Model.Field;
                     <wv-row>
                         <wv-column span="6">
-                            <wv-field-datetime value="fieldCasted.DefaultValue" label-text="Default Value"></wv-field-datetime>
+                            <wv-field-datetime timezone-name="@ErpSettings.TimeZoneName" value="fieldCasted.DefaultValue" label-text="Default Value"></wv-field-datetime>
                         </wv-column>
                         <wv-column span="6">
                             <wv-field-text value="fieldCasted.Format" label-text="Presentation format"></wv-field-text>
