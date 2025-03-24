@@ -12,6 +12,7 @@ namespace WebVella.Erp.Site.Crm
 
 		public static IWebHost BuildWebHost(string[] args) =>
 		   WebHost.CreateDefaultBuilder(args)
+			   .UseStaticWebAssets()
 			   .UseStartup<Startup>()
 			   .Build();
 	}

@@ -14,6 +14,9 @@
 
 
 	<ItemGroup>
+		<ProjectReference Include="..\WebVella.Erp.Plugins.Mail\WebVella.Erp.Plugins.Mail.csproj" />
+		<ProjectReference Include="..\WebVella.Erp.Plugins.MicrosoftCDM\WebVella.Erp.Plugins.MicrosoftCDM.csproj" />
+		<ProjectReference Include="..\WebVella.Erp.Plugins.Project\WebVella.Erp.Plugins.Project.csproj" />
 		<ProjectReference Include="..\WebVella.Erp.Plugins.Crm\WebVella.Erp.Plugins.Crm.csproj" />
 		<ProjectReference Include="..\WebVella.Erp.Plugins.Next\WebVella.Erp.Plugins.Next.csproj" />
 		<ProjectReference Include="..\WebVella.Erp.Plugins.SDK\WebVella.Erp.Plugins.SDK.csproj" />
