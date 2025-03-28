@@ -27,7 +27,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <UpToDateCheckInput Remove="Pages\warehouse\product_category\category-tree.cshtml" />
+        <EmbeddedResource Include="Snippets\**\*.cs" />
+        <EmbeddedResource Include="Snippets\**\*.html" />
     </ItemGroup>
 
 </Project>
