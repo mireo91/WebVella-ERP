@@ -19,6 +19,7 @@ using WebVella.Erp.Web;
 using WebVella.Erp.Web.Middleware;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Radzen;
 using Reomi.Erp.Plugins.Common;
 using Reomi.Erp.Plugins.Sale;
 
@@ -50,7 +51,8 @@ namespace Reomi.Erp.Site.Sale
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
             services.AddResponseCompression(options => { options.Providers.Add<GzipCompressionProvider>(); });
             services.AddRouting(options => { options.LowercaseUrls = true; });
-
+            services.AddRadzenComponents();
+            services.AddServerSideBlazor();
             //CORS policy declaration
             //services.AddCors(options =>
             //{
@@ -194,6 +196,7 @@ namespace Reomi.Erp.Site.Sale
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapBlazorHub();
             });
         }
     }

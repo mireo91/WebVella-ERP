@@ -1,4 +1,5 @@
-﻿@using System.Net.Http
+﻿@using System.Collections
+@using System.Net.Http
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
@@ -8,10 +9,91 @@
 @using System.Security.Claims;
 @using System.Threading.Tasks;
 @using Microsoft.AspNetCore.Components.Authorization;
+@using Wangkanai.Extensions
 @using WebVella.Erp.Api.Models;
 @*@using BlazorComponentUtilities; // nice new CssBuilder lib*@ 
 
 @inject IJSRuntime JSRuntime;
+
+<RadzenButton Click="@ButtonClicked" Text="Hi"></RadzenButton>
+@using WebVella.Erp.Eql
+@using WebVella.Erp.Utilities.Dynamic
+@using WebVella.Erp.Web.Models
+@using WebVella.Erp.Web.Pages.Dev
+
+<RadzenDataGrid @bind-Value=@selectedItems Data="@data" TItem="IDictionary<string, object>" ColumnWidth="200px"
+                AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true"
+                AllowGrouping="true"
+                HideGroupedColumn="true" Render="@OnRender">
+    <Columns>
+        @foreach (var column in columns)
+        {
+            <RadzenDataGridColumn @key=@column.Key Title="@column.Key" Type="column.Value"
+                                  Property="@PropertyAccess.GetDynamicPropertyExpression(column.Key, column.Value)">
+                <Template>
+                    @context[@column.Key]
+                </Template>
+            </RadzenDataGridColumn>
+        }
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+	
+	void OnRender(DataGridRenderEventArgs<IDictionary<string,object>> args)
+	{
+		if(args.FirstRender)
+		{
+			args.Grid.Groups.Add(new GroupDescriptor(){ Property = PropertyAccess.GetDynamicPropertyExpression("parentcategoryid", typeof(Guid?)),SortOrder = SortOrder.Descending});
+			StateHasChanged();
+		}
+	}
+    IList<IDictionary<string, object>> selectedItems;
+
+    public IEnumerable<IDictionary<string, object>> data { get; set; }
+
+    public IDictionary<string, Type> columns { get; set; }
+
+    public enum EnumTest
+    {
+        EnumValue1,
+        EnumValue2
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        columns = new Dictionary<string, Type>()
+        {
+            { "parentcategoryid", typeof(Guid?) },
+            // { "title", typeof(string) },
+            // { "FirstName", typeof(string) },
+            // { "LastName", typeof(string) },
+            // { "HireDate", typeof(DateTime?) },
+            // { "DateOnly", typeof(DateOnly?) },
+            // { "TimeOnly", typeof(TimeOnly?) },
+            // { "UID", typeof(Guid?) },
+        };
+        data = new EqlCommand("SELECT id, title, owningbusinessunit, description, parentcategoryid FROM cdm_common_category").Execute().Select(e => e.Properties).ToList();
+        if(!data.IsNullOrEmpty())
+	        foreach (var i in data.First())
+	        {
+		        if(!columns.ContainsKey(i.Key))
+					columns.Add(i.Key, i.Value.GetType());
+	        }
+
+        // data = new EqlCommand("SELECT * FROM cdm_common_category").Execute().Select(e => e.Properties).ToList();
+    }
+}
+@code {
+	void ButtonClicked()
+	{
+		// Handle the Click event of RadzenButton
+		Console.WriteLine("dupa");
+		// DialogService.Alert("jakiś alert");
+	}
+}
 
 @if (!Rendered)
 {
