@@ -19,7 +19,7 @@ using WebVella.Erp.Web;
 using WebVella.Erp.Web.Middleware;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Reomi.Erp.Plugin.Sale;
+using Reomi.Erp.Plugins.Sale;
 
 namespace Reomi.Erp.Site.Sale
 {

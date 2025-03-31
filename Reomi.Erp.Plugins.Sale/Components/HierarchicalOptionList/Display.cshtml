@@ -1,0 +1,46 @@
+@addTagHelper *, WebVella.Erp.Plugins.Core
+@addTagHelper *, WebVella.Erp.Web
+@using Reomi.Erp.Plugins.Sale.Components
+@using WebVella.Erp.Web.Models;
+@using WebVella.Erp.Web;
+@* @namespace Reomi.Erp.Plugins.Sale.Components *@
+@{
+    var options = (HierarchicalOptionList.HierarchicalOptionListOptions)ViewBag.Options;
+    var node = (PageBodyNode)ViewBag.Node;
+    var erpRequest = (ErpRequestContext)ViewBag.RequestContext;
+    var componentContext = (PageComponentContext)ViewBag.ComponentContext;
+    // var height = (string)ViewBag.Height;
+    // var width = (string)ViewBag.Width;
+}
+
+<script src="https://cdn.jsdelivr.net/npm/treeselectjs@0.13.0/dist/treeselectjs.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/treeselectjs@0.13.0/dist/treeselectjs.css" />
+<div class="p-1">
+    <div id="treeselect-@node.Id"></div>
+    @* <wv-chart height="@height" width="@width"></wv-chart> *@
+</div>
+
+<script>
+    const  nodeId = "@node.Id"
+    const options = @Html.Raw(options.Options)
+
+    const value = 4
+
+    const treeselectId = 'treeselect-@node.Id'
+
+    const domElement = document.getElementById(treeselectId)
+    const treeselect = new Treeselect({
+        parentHtmlContainer: domElement,
+        value,
+        options,
+        isSingleSelect: true,
+        showTags: true,
+        isGroupedValue: true,
+        name
+    })
+
+    treeselect.srcElement.addEventListener('input', (e) => {
+        console.log('singleSelect: Selected value ', e.detail)
+    })
+
+</script>

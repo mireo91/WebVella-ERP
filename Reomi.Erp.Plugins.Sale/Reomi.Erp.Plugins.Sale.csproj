@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
@@ -29,6 +30,7 @@
     <ItemGroup>
         <EmbeddedResource Include="Snippets\**\*.cs" />
         <EmbeddedResource Include="Snippets\**\*.html" />
+        <EmbeddedResource Include="Components\HierarchicalOptionList\service.js" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,48 @@
+﻿@addTagHelper *, WebVella.Erp.Plugins.Core
+@addTagHelper *, WebVella.Erp.Web
+@using Reomi.Erp.Plugins.Sale.Components
+@using WebVella.Erp.Web.Models;
+@using WebVella.Erp.Web;
+@using WebVella.Erp.Web.Components
+@using WebVella.Erp.Web.TagHelpers
+@* @namespace Reomi.Erp.Plugins.Sale.Components *@
+@{
+    var options = (HierarchicalOptionList.HierarchicalOptionListOptions)ViewBag.Options;
+    var node = (PageBodyNode)ViewBag.Node;
+    var fieldModel = (PcFieldBase.PcFieldBaseModel)ViewBag.Model;
+    var erpRequest = (ErpRequestContext)ViewBag.RequestContext;
+    var componentContext = (PageComponentContext)ViewBag.ComponentContext;
+    // var height = (string)ViewBag.Height;
+    // var width = (string)ViewBag.Width;
+}
+<wv-row>
+    <wv-column span="4">
+        <wv-field-datasource name="is_visible" label-text="Is Rendered" value="@options.IsVisible" page-id="erpRequest.Page.Id" placeholder="true"></wv-field-datasource>
+    </wv-column>
+</wv-row>
+<h4 class="mt-2 mb-0">Label</h4>
+<wv-row>
+    @* <wv-column span="4"> *@
+    @*      *@
+    @* </wv-column> *@
+    @* <wv-column span="4"> *@
+        <wv-field-text name="label_text" value="@options.LabelText" label-text="Label text"></wv-field-text>
+    @* </wv-column> *@
+</wv-row>
+<h4 class="mt-4 mb-0">Field</h4>
+<wv-row>
+    <wv-column span="4">
+        <wv-field-select name="mode" value="@((int)options.Mode)" label-text="Mode" options="@fieldModel.FieldRenderModeOptions" required="true"></wv-field-select>
+    </wv-column>
+    <wv-column span="4">
+        <wv-field-datasource name="value" value="@options.Value" label-text="Value" page-id="erpRequest.Page.Id"></wv-field-datasource>
+    </wv-column>
+    <wv-column span="4">
+        <wv-field-text name="name" value="@options.Name" label-text="Name"></wv-field-text>
+    </wv-column>
+</wv-row>
+<wv-row>
+    <wv-column span="4">
+        <wv-field-datasource name="options" value="@options.Options" label-text="Options" page-id="erpRequest.Page.Id"></wv-field-datasource>
+    </wv-column>
+</wv-row>

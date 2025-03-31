@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using WebVella.Erp;
 using WebVella.Erp.Api;
 
-namespace Reomi.Erp.Plugin.Sale;
+namespace Reomi.Erp.Plugins.Sale;
 
 public partial class SalePlugin: ErpPlugin
 {

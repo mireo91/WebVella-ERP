@@ -56,7 +56,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebVella.Erp.WebAssembly", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reomi.Erp.Site.Sale", "Reomi.Erp.Site.Sale\Reomi.Erp.Site.Sale.csproj", "{2FEAD8CB-FDB8-4556-9E34-10D826522E34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reomi.Erp.Plugin.Sale", "Reomi.Erp.Plugin.Sale\Reomi.Erp.Plugin.Sale.csproj", "{E7FF67DD-8CEA-4FE7-A637-0B82CEFC03B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reomi.Erp.Plugins.Sale", "Reomi.Erp.Plugins.Sale\Reomi.Erp.Plugins.Sale.csproj", "{E7FF67DD-8CEA-4FE7-A637-0B82CEFC03B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

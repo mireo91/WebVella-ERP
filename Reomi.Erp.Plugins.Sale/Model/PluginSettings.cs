@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Reomi.Erp.Plugin.Sale.Model;
+namespace Reomi.Erp.Plugins.Sale.Model;
 
 public class PluginSettings
 {

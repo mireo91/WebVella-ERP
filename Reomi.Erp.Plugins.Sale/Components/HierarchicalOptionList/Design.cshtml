@@ -1,0 +1,17 @@
+@addTagHelper *, WebVella.Erp.Plugins.Core
+@addTagHelper *, WebVella.Erp.Web
+@using Reomi.Erp.Plugins.Sale.Components
+@using WebVella.Erp.Web.Models;
+@using WebVella.Erp.Web;
+@* @namespace Reomi.Erp.Plugins.Sale.Components *@
+@{
+    var options = (HierarchicalOptionList.HierarchicalOptionListOptions)ViewBag.Options;
+    var node = (PageBodyNode)ViewBag.Node;
+    var erpRequest = (ErpRequestContext)ViewBag.RequestContext;
+    var componentContext = (PageComponentContext)ViewBag.ComponentContext;
+    // var height = (string)ViewBag.Height;
+    // var width = (string)ViewBag.Width;
+}
+<div class="p-1">
+    hierarchical option list
+</div>
