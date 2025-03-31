@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Reomi.Erp.Plugins.Common\Reomi.Erp.Plugins.Common.csproj" />
       <ProjectReference Include="..\Reomi.Erp.Plugins.Sale\Reomi.Erp.Plugins.Sale.csproj" />
       <ProjectReference Include="..\WebVella.Erp.Plugins.SDK\WebVella.Erp.Plugins.SDK.csproj" />
       <ProjectReference Include="..\WebVella.Erp.Web\WebVella.Erp.Web.csproj" />

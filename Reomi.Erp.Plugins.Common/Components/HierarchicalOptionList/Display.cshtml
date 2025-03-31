@@ -1,8 +1,10 @@
 @addTagHelper *, WebVella.Erp.Plugins.Core
 @addTagHelper *, WebVella.Erp.Web
-@using Reomi.Erp.Plugins.Sale.Components
+@addTagHelper *, WebVella.TagHelpers
+@using Reomi.Erp.Plugins.Common.Components
 @using WebVella.Erp.Web.Models;
 @using WebVella.Erp.Web;
+@using WebVella.TagHelpers.TagHelpers
 @* @namespace Reomi.Erp.Plugins.Sale.Components *@
 @{
     var options = (HierarchicalOptionList.HierarchicalOptionListOptions)ViewBag.Options;
@@ -13,9 +15,8 @@
     // var width = (string)ViewBag.Width;
 }
 
-<script src="https://cdn.jsdelivr.net/npm/treeselectjs@0.13.0/dist/treeselectjs.umd.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/treeselectjs@0.13.0/dist/treeselectjs.css" />
 <div class="p-1">
+    <wv-field-text name="@options.Name" value="@(options.Value)" mode="@options.Mode" label-text="@options.LabelText" label-mode="@options.LabelMode" api-url="@options.AjaxDatasourceApi"></wv-field-text>
     <div id="treeselect-@node.Id"></div>
     @* <wv-chart height="@height" width="@width"></wv-chart> *@
 </div>

@@ -27,4 +27,9 @@
       <ProjectReference Include="..\WebVella.ERP\WebVella.Erp.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Include="Snippets\**\*.cs" />
+        <EmbeddedResource Include="Snippets\**\*.html" />
+        <EmbeddedResource Include="Components\HierarchicalOptionList\service.js" />
+    </ItemGroup>
 </Project>

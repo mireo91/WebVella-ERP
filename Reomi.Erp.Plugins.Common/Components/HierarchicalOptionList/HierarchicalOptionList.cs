@@ -9,7 +9,7 @@ using WebVella.Erp.Web.Models;
 using WebVella.Erp.Web.Services;
 using WebVella.TagHelpers.Models;
 
-namespace Reomi.Erp.Plugins.Sale.Components;
+namespace Reomi.Erp.Plugins.Common.Components;
 
 [PageComponent(Label = "Hierarchical Option List", Library = "Reomi", Description = "Provides hierarchical list", Version = "0.0.1", IconClass = "fas fa-list")]
 public class HierarchicalOptionList : PcFieldBase

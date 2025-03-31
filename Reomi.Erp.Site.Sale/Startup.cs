@@ -19,6 +19,7 @@ using WebVella.Erp.Web;
 using WebVella.Erp.Web.Middleware;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Reomi.Erp.Plugins.Common;
 using Reomi.Erp.Plugins.Sale;
 
 namespace Reomi.Erp.Site.Sale
@@ -182,6 +183,7 @@ namespace Reomi.Erp.Site.Sale
 
 			app
 			.UseErpPlugin<SdkPlugin>()
+			.UseErpPlugin<CommonPlugin>()
 			.UseErpPlugin<SalePlugin>()
             .UseErp()
             .UseErpMiddleware()

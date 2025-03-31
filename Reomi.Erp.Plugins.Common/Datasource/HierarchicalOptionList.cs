@@ -6,7 +6,7 @@ using WebVella.Erp.Eql;
 using WebVella.Erp.Web.Models;
 using WebVella.Erp.Web.Utils;
 
-namespace Reomi.Erp.Plugins.Sale.DataSource
+namespace Reomi.Erp.Plugins.Common.DataSource
 {
 	public class HierarchicalOptionList : CodeDataSource
 	{

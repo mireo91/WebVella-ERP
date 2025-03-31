@@ -1,6 +1,7 @@
 ﻿@addTagHelper *, WebVella.Erp.Plugins.Core
 @addTagHelper *, WebVella.Erp.Web
-@using Reomi.Erp.Plugins.Sale.Components
+@addTagHelper *, WebVella.TagHelpers
+@using Reomi.Erp.Plugins.Common.Components
 @using WebVella.Erp.Web.Models;
 @using WebVella.Erp.Web;
 @using WebVella.Erp.Web.Components
@@ -25,9 +26,9 @@
     @* <wv-column span="4"> *@
     @*      *@
     @* </wv-column> *@
-    @* <wv-column span="4"> *@
+    <wv-column span="4">
         <wv-field-text name="label_text" value="@options.LabelText" label-text="Label text"></wv-field-text>
-    @* </wv-column> *@
+    </wv-column>
 </wv-row>
 <h4 class="mt-4 mb-0">Field</h4>
 <wv-row>
