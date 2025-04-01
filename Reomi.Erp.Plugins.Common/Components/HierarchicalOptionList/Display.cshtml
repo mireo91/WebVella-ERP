@@ -4,6 +4,9 @@
 @using Reomi.Erp.Plugins.Common.Components
 @using WebVella.Erp.Web.Models;
 @using WebVella.Erp.Web;
+@using WebVella.Erp.Web.Components
+@using WebVella.Erp.Web.Utils
+@using WebVella.TagHelpers.Models
 @using WebVella.TagHelpers.TagHelpers
 @* @namespace Reomi.Erp.Plugins.Sale.Components *@
 @{
@@ -13,13 +16,54 @@
     var componentContext = (PageComponentContext)ViewBag.ComponentContext;
     // var height = (string)ViewBag.Height;
     // var width = (string)ViewBag.Width;
+    var fieldModel = (PcFieldText.PcFieldBaseModel)ViewBag.Model;
+    var labelMode = (WvLabelRenderMode)ViewBag.LabelMode;
+    var mode = (WvFieldRenderMode)ViewBag.Mode;
+    if(String.IsNullOrWhiteSpace(fieldModel.ApiUrl))
+        fieldModel.ApiUrl = $"/api/v3/en_US/record/{fieldModel.EntityName}/{fieldModel.RecordId}";
 }
 
-<div class="p-1">
-    <wv-field-text name="@options.Name" value="@(options.Value)" mode="@options.Mode" label-text="@options.LabelText" label-mode="@options.LabelMode" api-url="@options.AjaxDatasourceApi"></wv-field-text>
-    <div id="treeselect-@node.Id"></div>
-    @* <wv-chart height="@height" width="@width"></wv-chart> *@
-</div>
+@if((bool)ViewBag.IsVisible){
+    <div class="hierarchical-select">
+        <wv-field-text label-mode="@labelMode" label-text="@options.LabelText" label-warning-text="@fieldModel.LabelWarningText"
+                       label-error-text="@fieldModel.LabelErrorText" label-help-text="@options.LabelHelpText" field-id="@fieldModel.FieldId"
+                       name="@options.Name" class="@options.Class" value="@fieldModel.Value" mode="@mode" access="@fieldModel.Access"
+                       init-errors="@fieldModel.InitErrors" validation-errors="@fieldModel.ValidationErrors.ToKeyValuePair()"
+                       api-url="@fieldModel.ApiUrl" access-denied-message="@fieldModel.AccessDeniedMessage"
+                       empty-value-message="@fieldModel.EmptyValueMessage" required="@fieldModel.Required" placeholder="@options.Placeholder"
+                       description="@options.Description" locale="@fieldModel.Locale" maxlength="@options.MaxLength" is-visible="(bool)ViewBag.IsVisible"></wv-field-text>
+        <div id="treeselect-@node.Id" class="treeselect-input-wrapper mode-@mode.ToString().ToLower()"></div>
+        <div class="edit-wrapper" id="edit-@node.Id" style="display: none;">
+            <div class="input-group">
+                <input class="form-control erp-text" value="">
+                <span class="input-group-append">
+                    <button type="button" class="btn btn-white save" title="save">
+                        <i class="fa fa-fw fa-check go-green"></i>
+                    </button>
+                    <button type="button" class="btn btn-white cancel" title="cancel">
+                        <i class="fa fa-fw fa-times go-gray"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+}
+
+<style type="text/css">
+    .hierarchical-select{
+        position:  relative;
+    }
+    .hierarchical-select .treeselect-input-wrapper{
+        position: absolute;
+        max-width: 100%;
+        bottom: 0;
+        left: 0;
+        margin:  0;
+    }
+    .hierarchical-select .treeselect-input-wrapper.mode-inlineeditable{
+        max-width: calc(100% - 100px);
+    }
+</style>
 
 <script>
     const  nodeId = "@node.Id"
@@ -43,5 +87,29 @@
     treeselect.srcElement.addEventListener('input', (e) => {
         console.log('singleSelect: Selected value ', e.detail)
     })
+
+    respondToVisibility = function(element, callback) {
+        var options = {
+            root: document.documentElement
+        }
+
+        var observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                callback(entry.intersectionRatio > 0);
+            });
+        }, options);
+
+        observer.observe(element);
+    }
+
+    respondToVisibility(document.getElementById("myElement"), visible => {
+        const feedbackEl = document.getElementById("visibilityFeedback");
+        if(visible) {
+            feedbackEl.innerText = "Visible!";
+        }
+        else {
+            feedbackEl.innerText = "Not Visible";
+        }
+    });
 
 </script>
