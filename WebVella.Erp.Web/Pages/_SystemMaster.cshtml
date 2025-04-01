@@ -1,4 +1,7 @@
-﻿@using WebVella.Erp
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Radzen.Blazor
+@using WebVella.Erp
+@using WebVella.TagHelpers.TagHelpers
 <!DOCTYPE html>
 <html lang="@ErpSettings.Lang">
 <head>
@@ -6,11 +9,13 @@
 	<vc:render-hook placeholder="head-top" page-model="@Model"  model="null"></vc:render-hook>
 	<wv-includes></wv-includes>
 	<vc:render-hook placeholder="head-bottom" page-model="@Model"  model="null"></vc:render-hook>
+	<component type="typeof(RadzenTheme)" render-mode="ServerPrerendered" param-Theme="@("material")" />
 </head>
 <body class="@ViewData["BodyClass"] system" style="@ViewData["SystemMasterBodyStyle"]">
     @RenderBody()
 	<vc:render-hook placeholder="body-top" page-model="@Model"  model="null"></vc:render-hook>
 	<vc:render-hook placeholder="body-bottom" page-model="@Model"  model="null"></vc:render-hook>
-	<vc:screen-message></vc:screen-message>
+    <vc:screen-message></vc:screen-message>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
 </body>
 </html>
