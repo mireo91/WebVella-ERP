@@ -28,8 +28,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="Components\DataGrid\service.js" />
         <EmbeddedResource Include="Snippets\**\*.cs" />
         <EmbeddedResource Include="Snippets\**\*.html" />
         <EmbeddedResource Include="Components\HierarchicalOptionList\service.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\" />
     </ItemGroup>
 </Project>

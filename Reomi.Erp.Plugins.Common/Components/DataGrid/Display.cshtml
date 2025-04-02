@@ -1,0 +1,27 @@
+@addTagHelper *, WebVella.Erp.Web
+@addTagHelper *, WebVella.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Radzen.Blazor
+@using Reomi.Erp.Plugins.Common.Components
+@using Reomi.Erp.Plugins.Common.Components.RadzenComponents
+@using WebVella.Erp.Web.Models;
+@using WebVella.Erp.Web;
+@* @namespace Reomi.Erp.Plugins.Sale.Components *@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    var options = (DataGrid.DataGridOptions)ViewBag.Options;
+    var node = (PageBodyNode)ViewBag.Node;
+    var erpRequest = (ErpRequestContext)ViewBag.RequestContext;
+    var componentContext = (PageComponentContext)ViewBag.ComponentContext;
+    // // var height = (string)ViewBag.Height;
+    // // var width = (string)ViewBag.Width;
+    // var fieldModel = (PcFieldText.PcFieldBaseModel)ViewBag.Model;
+    // var labelMode = (WvLabelRenderMode)ViewBag.LabelMode;
+    // var mode = (WvFieldRenderMode)ViewBag.Mode;
+    // if(String.IsNullOrWhiteSpace(fieldModel.ApiUrl))
+    //     fieldModel.ApiUrl = $"/api/v3/en_US/record/{fieldModel.EntityName}/{fieldModel.RecordId}";
+}
+
+<component type="typeof(ReomiDataGrid)" render-mode="ServerPrerendered">
+    This is a test for child content
+</component>
