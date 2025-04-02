@@ -16,6 +16,34 @@
 	<vc:render-hook placeholder="body-top" page-model="@Model"  model="null"></vc:render-hook>
 	<vc:render-hook placeholder="body-bottom" page-model="@Model"  model="null"></vc:render-hook>
     <vc:screen-message></vc:screen-message>
+    <script src="_framework/blazor.server.js" autostart="false"></script>
+    <script>
+	    (function start() {
+		    Blazor.start({
+			    logLevel: 1, // LogLevel.Debug
+			    configureSignalR: builder => builder.configureLogging("debug"), // LogLevel.Debug
+			    reconnectionOptions: {
+				    maxRetries: 99999999,
+				    retryIntervalMilliseconds: 1000,
+			    }
+		    });
+
+	    })()
+    </script>
+    <script>
+	    function customDisplay() {
+		    return {
+			    show: () => { console.log('blazor show'); },
+			    hide: () => { console.log('blazor hide'); },
+			    failed: () => { console.log('blazor failed'); },
+			    rejected: () => { console.log('blazor rejected'); window.location.reload();}
+		    };
+	    }
+
+	    Blazor.defaultReconnectionHandler._reconnectionDisplay = customDisplay();
+
+    </script>
+    
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
 </body>
 </html>

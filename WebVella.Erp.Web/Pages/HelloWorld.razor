@@ -7,19 +7,182 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web;
 @using System.Security.Claims;
+@using System.Text.Json
 @using System.Threading.Tasks;
 @using Microsoft.AspNetCore.Components.Authorization;
 @using Wangkanai.Extensions
 @using WebVella.Erp.Api.Models;
+@using WebVella.Erp.Eql
+@using WebVella.Erp.Web.Utils
 @*@using BlazorComponentUtilities; // nice new CssBuilder lib*@ 
 
 @inject IJSRuntime JSRuntime;
 
-<RadzenButton Click="@ButtonClicked" Text="Hi"></RadzenButton>
-@using WebVella.Erp.Eql
-@using WebVella.Erp.Utilities.Dynamic
-@using WebVella.Erp.Web.Models
-@using WebVella.Erp.Web.Pages.Dev
+<RadzenStack class="rz-p-0 rz-p-md-12">
+	<RadzenCard Variant="Variant.Outlined" Style="width: 100%">
+		<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+			<RadzenCheckBox @bind-Value=@popup Name="popup"></RadzenCheckBox>
+			<RadzenLabel Text="Display validators as popup" Component="popup" />
+		</RadzenStack>
+	</RadzenCard>
+
+	<RadzenTemplateForm TItem="Model" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+		<RadzenFieldset Text="Personal information">
+			<RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
+				<RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+					<RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+						<RadzenLabel Text="First Name" Component="FirstName" />
+					</RadzenColumn>
+					<RadzenColumn Size="12" SizeMD="8">
+						<RadzenTextBox Name="FirstName" @bind-Value=@model.FirstName Style="display: block; width: 100%;" />
+						<RadzenRequiredValidator Component="FirstName" Text="First name is required" Popup=@popup Style="position: absolute"/>
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+					<RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+						<RadzenLabel Text="Last Name" Component="LastName" />
+					</RadzenColumn>
+					<RadzenColumn Size="12" SizeMD="8">
+						<RadzenTextBox Name="LastName" @bind-Value=@model.LastName Style="display: block; width: 100%;" />
+						<RadzenRequiredValidator Component="LastName" Text="Last name is required" Popup=@popup Style="position: absolute"/>
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Center" class="rz-mt-4">
+					<RadzenColumn Size="12" Offset="0" SizeMD="8" OffsetMD="4">
+						<RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+					</RadzenColumn>
+				</RadzenRow>
+			</RadzenStack>
+		</RadzenFieldset>
+	</RadzenTemplateForm>
+
+	@* <EventConsole @ref=@console /> *@
+</RadzenStack>
+
+@code {
+	class Model
+	{
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
+	}
+
+	bool popup;
+
+	Model model = new Model();
+	// EventConsole console;
+
+	void OnSubmit(Model model)
+	{
+		Console.WriteLine($"Submit: {JsonSerializer.Serialize(model, new JsonSerializerOptions() { WriteIndented = true })}");
+	}
+
+	void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+	{
+		Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+	}
+}
+
+<RadzenDataGrid @ref="grid" AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
+                RowRender="@RowRender" LoadChildData="@LoadChildData" Data="@employees" TItem="IDictionary<string, object>"
+                RowCollapse="@(args => grid.ColumnsCollection.ToList().ForEach(c => c.ClearFilters()))">
+	<HeaderTemplate>
+		<RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Order" Click="@InsertRow" />
+	</HeaderTemplate>
+	<Columns>
+		<RadzenDataGridColumn Title="Title" Frozen="true" Sortable="false" Filterable="false" Width="300px">
+			<Template Context="data">
+				@* <RadzenImage Path="@data.Photo" class="rz-gravatar rz-me-1" AlternateText="@(data.FirstName + " " + data.LastName)" /> *@
+				<strong>@data["title"]</strong>
+			</Template>
+		</RadzenDataGridColumn>
+		<RadzenDataGridColumn Title="Description">
+			<EditTemplate Context="data">
+				<RadzenTextBox Value="@((string)data["description"])" ValueChanged="s => Console.WriteLine(s)" Style="width:200px; display: block" Name="Description" aria-label="Enter description" />
+				<RadzenRequiredValidator Text="Description is required" Component="Description" Popup="true" />
+			</EditTemplate>
+		</RadzenDataGridColumn>
+		@foreach (var column in columns)
+		{
+			<RadzenDataGridColumn @key=@column.Key Title="@column.Key" Type="column.Value"
+			                      Property="@PropertyAccess.GetDynamicPropertyExpression(column.Key, column.Value)">
+				<Template>
+					@context[@column.Key]
+				</Template>
+			</RadzenDataGridColumn>
+		}
+		<RadzenDataGridColumn Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+			<Template Context="order">
+				@* <RadzenButton Icon="add_circle" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" Click="@(() => InsertAfterRow(order))" title="Add new row after this row" Disabled="@(editMode == DataGridEditMode.Single && ordersToInsert.Count() > 0)" /> *@
+				<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@(args => EditRow(order))" @onclick:stopPropagation="true" />
+				@* <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(order))" @onclick:stopPropagation="true" /> *@
+			</Template>
+			<EditTemplate Context="order">
+				@* <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow(order))" aria-label="Save"/> *@
+				@* <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@((args) => CancelEdit(order))" aria-label="Cancel"/> *@
+				@* <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(order))" aria-label="Delete" /> *@
+			</EditTemplate>
+		</RadzenDataGridColumn>
+	</Columns>
+</RadzenDataGrid>
+
+@code {
+    IEnumerable<IDictionary<string, object>> employees;
+    RadzenDataGrid<IDictionary<string, object>> grid;
+    DataGridEditMode editMode = DataGridEditMode.Single;
+    
+    async Task EditRow(IDictionary<string,object> order)
+    {
+	    if (!grid.IsValid) return;
+
+	    if (editMode == DataGridEditMode.Single)
+	    {
+		    // Reset();
+	    }
+
+	    // ordersToUpdate.Add(order);
+	    await grid.EditRow(order);
+    }
+    
+    async Task InsertRow()
+    {
+	    if (!grid.IsValid) return;
+
+	    if (editMode == DataGridEditMode.Single)
+	    {
+		    // Reset();
+	    }
+
+	    var order = new Dictionary<string,object>(data.First());
+	    // ordersToInsert.Add(order);
+	    await grid.InsertRow(order);
+    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     await base.OnInitializedAsync();
+    //
+    //     // employees = dbContext.Employees.Where(e => e.ReportsTo == null);
+    // }
+
+    void RowRender(RowRenderEventArgs<IDictionary<string, object>> args)
+    {
+        args.Expandable = data.Any(e => (Guid?)e["parentcategoryid"] == (Guid)args.Data["id"]);
+    }
+
+    void LoadChildData(DataGridLoadChildDataEventArgs<IDictionary<string, object>> args)
+    {
+        args.Data = data.Where(e => (Guid?)e["parentcategoryid"] == (Guid)args.Item["id"]);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if (firstRender)
+        {
+            await grid.ExpandRow(data.FirstOrDefault());
+        }
+    }
+}
 
 <RadzenDataGrid @bind-Value=@selectedItems Data="@data" TItem="IDictionary<string, object>" ColumnWidth="200px"
                 AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true"
@@ -44,7 +207,7 @@
 	{
 		if(args.FirstRender)
 		{
-			args.Grid.Groups.Add(new GroupDescriptor(){ Property = PropertyAccess.GetDynamicPropertyExpression("parentcategoryid", typeof(Guid?)),SortOrder = SortOrder.Descending});
+			args.Grid.Groups.Add(new GroupDescriptor(){ Property = PropertyAccess.GetDynamicPropertyExpression("parentcategoryid", typeof(Guid?)),SortOrder = SortOrder.Descending, Title = "Parent category"});
 			StateHasChanged();
 		}
 	}
@@ -66,7 +229,7 @@
 
         columns = new Dictionary<string, Type>()
         {
-            { "parentcategoryid", typeof(Guid?) },
+            // { "parentcategoryid", typeof(Guid?) },
             // { "title", typeof(string) },
             // { "FirstName", typeof(string) },
             // { "LastName", typeof(string) },
@@ -79,10 +242,10 @@
         if(!data.IsNullOrEmpty())
 	        foreach (var i in data.First())
 	        {
-		        if(!columns.ContainsKey(i.Key))
+		        if(!columns.ContainsKey(i.Key) && i.Key != "parentcategoryid")
 					columns.Add(i.Key, i.Value.GetType());
 	        }
-
+        employees = data.Where(e => e["parentcategoryid"] == null);
         // data = new EqlCommand("SELECT * FROM cdm_common_category").Execute().Select(e => e.Properties).ToList();
     }
 }
