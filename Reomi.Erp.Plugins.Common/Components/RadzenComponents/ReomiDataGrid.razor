@@ -9,6 +9,7 @@
 @using System.Security.Claims;
 @using System.Text.Json
 @using System.Threading.Tasks;
+@using CSScripting
 @using Microsoft.AspNetCore.Components.Authorization;
 @using Wangkanai.Extensions
 @using WebVella.Erp.Api.Models;
@@ -19,10 +20,13 @@
 @inject IJSRuntime JSRuntime;
 @using Radzen
 @using Radzen.Blazor
+@using WebVella.Erp.Api
+@using WebVella.Erp.Utilities.Dynamic
 
-<RadzenDataGrid @ref="grid" AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
-                RowRender="@RowRender" LoadChildData="@LoadChildData" Data="@gridEntities" TItem="IDictionary<string, object>"
-                RowCollapse="@(args => grid.ColumnsCollection.ToList().ForEach(c => c.ClearFilters()))">
+<RadzenDataGrid @ref="grid" allowAlternatingRows="false" AllowFiltering="true" AllowPaging="false" PageSize="1000" AllowSorting="true" 
+                RowRender="@RowRender" LoadChildData="@LoadChildData" Data="@gridEntities" TItem="EntityRecord"  Density="@Density.Compact"
+                RowCollapse="@(args => grid.ColumnsCollection.ToList().ForEach(c => c.ClearFilters()))"
+                RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" Sort="@Reset" Page="@Reset" Filter="@Reset">
 	<HeaderTemplate>
 		<RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Order" Click="@InsertRow" />
 	</HeaderTemplate>
@@ -32,16 +36,16 @@
 				<strong>@data["title"]</strong>
 			</Template>
 			<EditTemplate Context="data">
-				<RadzenTextBox Value="@((string)data["title"])" Style="width:200px; display: block" Name="title" aria-label="Enter title"/>
+				<RadzenTextBox Value="@((string)data["title"])" ValueChanged="@(s => OnChangeProperty(data, "title", s))" Style="width:200px; display: block" Name="title" aria-label="Enter title"/>
 				<RadzenRequiredValidator Text="Title is required" Component="title" Popup="true"/>
 			</EditTemplate>
 		</RadzenDataGridColumn>
-		<RadzenDataGridColumn Title="Description">
+		<RadzenDataGridColumn Title="Description" Type="@(columns["description"])">
 			<Template Context="data">
 				<strong>@data["description"]</strong>
 			</Template>
 			<EditTemplate Context="data">
-				<RadzenTextBox Value="@((string)data["description"])" Style="width:200px; display: block" Name="description" aria-label="Enter description" />
+				<RadzenTextBox Value="@((string)data["description"])" ValueChanged="@(s => OnChangeProperty(data, "description", s))" Style="width:100%; display: block" Name="description" aria-label="Enter description" />
 			</EditTemplate>
 		</RadzenDataGridColumn>
 		@* @foreach (var column in columns) *@
@@ -76,11 +80,9 @@
 
 @code {
 	
-    IEnumerable<IDictionary<string, object>> gridEntities;
-    RadzenDataGrid<IDictionary<string, object>> grid;
+    IEnumerable<EntityRecord> gridEntities;
+    RadzenDataGrid<EntityRecord> grid;
     DataGridEditMode editMode = DataGridEditMode.Single;
-
-    IDictionary<string, object> defaultObject = new Dictionary<string, object>();
     // protected override async Task OnInitializedAsync()
     // {
     //     await base.OnInitializedAsync();
@@ -88,13 +90,14 @@
     //     // employees = dbContext.Employees.Where(e => e.ReportsTo == null);
     // }
 
-    void RowRender(RowRenderEventArgs<IDictionary<string, object>> args)
+    void RowRender(RowRenderEventArgs<EntityRecord> args)
     {
         args.Expandable = data.Any(e => (Guid?)e["parentcategoryid"] == (Guid)args.Data["id"]);
     }
 
-    void LoadChildData(DataGridLoadChildDataEventArgs<IDictionary<string, object>> args)
+    void LoadChildData(DataGridLoadChildDataEventArgs<EntityRecord> args)
     {
+	    // Console.WriteLine("LoadChildData");
         args.Data = data.Where(e => (Guid?)e["parentcategoryid"] == (Guid)args.Item["id"]);
     }
 
@@ -108,22 +111,25 @@
         }
     }
 
-    List<IDictionary<string,object>> entitiesToInsert = new List<IDictionary<string,object>>();
-    List<IDictionary<string,object>> entitiesToUpdate = new List<IDictionary<string,object>>();
+    List<EntityRecord> entitiesToInsert = new List<EntityRecord>();
+    List<EntityRecord> entitiesToUpdate = new List<EntityRecord>();
+    IDictionary<string, object> propertiesToEdit = new Dictionary<string, object>();
 
     void Reset()
     {
+	    propertiesToEdit.Clear();
 	    entitiesToInsert.Clear();
 	    entitiesToUpdate.Clear();
     }
 
-    void Reset(IDictionary<string,object> entity)
+    void Reset(EntityRecord entity)
     {
+	    propertiesToEdit.Clear();
 	    entitiesToInsert.Remove(entity);
 	    entitiesToUpdate.Remove(entity);
     }
 
-    async Task EditRow(IDictionary<string,object> entity)
+    async Task EditRow(EntityRecord entity)
     {
         if (!grid.IsValid) return;
 
@@ -131,26 +137,36 @@
         {
             Reset();
         }
-
+        // Console.WriteLine("EditRow");
         entitiesToUpdate.Add(entity);
         await grid.EditRow(entity);
     }
 
-    void OnUpdateRow(IDictionary<string,object> entity)
+    void OnUpdateRow(EntityRecord entity)
     {
-        Reset(entity);
+        
+		var queryResponse = (new RecordManager()).UpdateRecord("cdm_common_category", entity);
+		if (queryResponse.Success)
+		{
+			Reset(entity);
+		}
+		// dbContext.Update(order);
 
-        // dbContext.Update(order);
-
-        // dbContext.SaveChanges();
+		// dbContext.SaveChanges();
     }
 
-    async Task SaveRow(IDictionary<string,object> entity)
+    async Task SaveRow(EntityRecord entity)
     {
+	    // data = data.AddItem(entity);
+	    foreach (var prop in propertiesToEdit)
+	    {
+		    entity[prop.Key] = prop.Value;
+	    }
         await grid.UpdateRow(entity);
+        // await grid.Reload();
     }
 
-    void CancelEdit(IDictionary<string,object> entity)
+    void CancelEdit(EntityRecord entity)
     {
         Reset(entity);
 
@@ -164,17 +180,28 @@
         // }
     }
 
-    async Task DeleteRow(IDictionary<string,object> entity)
+    async Task DeleteRow(EntityRecord entity)
     {
         Reset(entity);
-
-        if (gridEntities.Contains(entity))
+        foreach (var e in data.Where(d => d["parentcategoryid"] == entity["id"]))
         {
+	        await DeleteRow(e);
+        }
+        if (data.Contains(entity))
+        {
+	        var queryResponse = (new RecordManager()).DeleteRecord("cdm_common_category", (Guid)entity["id"]);
+	        if (queryResponse.Success)
+	        {
+		        data = data.Where(e => e["id"] != entity["id"]);
+		        gridEntities = data.Where(e => e.Properties["parentcategoryid"] == null);
+	        }
             // dbContext.Remove<Order>(order);
             //
             // dbContext.SaveChanges();
-
-            await grid.Reload();
+			// Console.WriteLine("Delete row");
+			await grid.Reload();
+			await grid.CollapseAll();
+			await grid.ExpandRows(data);
         }
         else
         {
@@ -192,12 +219,12 @@
             Reset();
         }
 
-        var order = new Dictionary<string, object>(defaultObject);
-        entitiesToInsert.Add(order);
-        await grid.InsertRow(order);
+        var entity = new EntityRecord();
+        entitiesToInsert.Add(entity);
+        await grid.InsertRow(entity);
     }
 
-    async Task InsertAfterRow(IDictionary<string,object> row)
+    async Task InsertAfterRow(EntityRecord row)
     {
         if (!grid.IsValid) return;
 
@@ -206,12 +233,17 @@
             Reset();
         }
 
-        var entity = new Dictionary<string,object>(row);
+        var entity = new EntityRecord();
+        foreach (var param in row.Properties)
+        {
+	        entity[param.Key] = param.Value;
+        }
+        entity["id"] = Guid.NewGuid();
         entitiesToInsert.Add(entity);
         await grid.InsertAfterRow(entity, row);
     }
 	
-    async Task InsertInsideRow(IDictionary<string,object> row)
+    async Task InsertInsideRow(EntityRecord row)
     {
 	    if (!grid.IsValid) return;
 
@@ -220,35 +252,56 @@
 		    Reset();
 	    }
 
-	    var entity = new Dictionary<string,object>(row);
+	    var entity = new EntityRecord();
+	    foreach (var param in row.Properties)
+	    {
+		    entity[param.Key] = param.Value;
+	    }
 	    entity["parentcategoryid"] = row["id"];
+	    entity["id"] = Guid.NewGuid();
 	    entitiesToInsert.Add(entity);
 	    await grid.InsertAfterRow(entity, row);
     }
 
-    void OnCreateRow(IDictionary<string,object> entity)
+    void OnCreateRow(EntityRecord entity)
     {
-        // dbContext.Add(order);
-        //
-        // dbContext.SaveChanges();
+	    var record = new EntityRecord();
+	    foreach (var param in entity.Properties)
+	    {
+			record[param.Key] = param.Value;
+	    }
+	    var queryResponse = (new RecordManager()).CreateRecord("cdm_common_category", record);
+        if (queryResponse.Success)
+        {
+	        entitiesToInsert.Remove(entity);
+	        data = data.AddItem(entity);
+	        gridEntities = data.Where(e => e.Properties["parentcategoryid"] == null);
+	        grid.Reload();
+	        grid.CollapseAll();
+	        grid.ExpandRows(data);
+        }
+    }
 
-        entitiesToInsert.Remove(entity);
+    void Reload()
+    {
+	    grid.ResetLoadData();
+	    grid.Reload();
     }
     
-    void OnClick(RadzenSplitButtonItem item, IDictionary<string,object> entity)
+    void OnClick(RadzenSplitButtonItem item, EntityRecord entity)
     {
 	    if (item != null)
 	    {
 		    switch (item.Value)
 		    {
 			    case "inside":
-				    InsertInsideRow(entity);
+				    _ = InsertInsideRow(entity);
 				    break;
 				case "after":
-				    InsertAfterRow(entity);
+				    _ = InsertAfterRow(entity);
 				    break;
 		    }
-		    Console.WriteLine($"item with value {item.Value} clicked");
+		    // Console.WriteLine($"item with value {item.Value} clicked");
 		    // NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "SplitButton Item Clicked", Detail = $"{buttonName}, item with value {item.Value} clicked" });
 	    }
 	    else
@@ -257,6 +310,12 @@
 		    // NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "SplitButton Clicked", Detail = $"{buttonName} clicked" });
 	    }
     }
+
+    private void OnChangeProperty(EntityRecord entity, string property, object s)
+    {
+	    propertiesToEdit[property] = s;
+    }
+
 }
 
 @* <RadzenDataGrid @bind-Value=@selectedItems Data="@data" TItem="IDictionary<string, object>" ColumnWidth="200px" *@
@@ -288,7 +347,7 @@
 	// }
     // IList<IDictionary<string, object>> selectedItems;
 
-    public IEnumerable<IDictionary<string, object>> data { get; set; }
+    public IEnumerable<EntityRecord> data { get; set; }
 
     public IDictionary<string, Type> columns { get; set; }
 
@@ -313,14 +372,14 @@
             // { "TimeOnly", typeof(TimeOnly?) },
             // { "UID", typeof(Guid?) },
         };
-        data = new EqlCommand("SELECT id, title, owningbusinessunit, description, parentcategoryid FROM cdm_common_category").Execute().Select(e => e.Properties).ToList();
+        data = new EqlCommand("SELECT id, title, owningbusinessunit, description, parentcategoryid FROM cdm_common_category").Execute();
         if(!data.IsNullOrEmpty())
-	        foreach (var i in data.First())
+	        foreach (var i in data.First().Properties)
 	        {
 		        if(!columns.ContainsKey(i.Key) && i.Key != "parentcategoryid")
 					columns.Add(i.Key, i.Value.GetType());
 	        }
-        gridEntities = data.Where(e => e["parentcategoryid"] == null);
+        gridEntities = data.Where(e => e.Properties["parentcategoryid"] == null);
         // data = new EqlCommand("SELECT * FROM cdm_common_category").Execute().Select(e => e.Properties).ToList();
     }
 }
