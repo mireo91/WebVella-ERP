@@ -2,14 +2,44 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using WebVella.Erp;
+using WebVella.Erp.Api;
 using WebVella.Erp.Api.Models;
 using WebVella.Erp.Hooks;
+using WebVella.Erp.Web;
 
 namespace Reomi.Erp.Plugins.Common.Hooks
 {
     [HookAttachment]
-    public class RecordHook : IErpDefaultFields
+    public class RecorDefaultHook : IErpPreCreateRecordHook, IErpPreUpdateRecordHook,IErpDefaultFields
     {
+
+        public void OnPreCreateRecord(string entityName, EntityRecord record, List<ErrorModel> errors)
+        {
+            Entity entity = new EntityManager().ReadEntity(entityName).Object;
+            if (entity.Fields.Exists(x => x.Name == "createdby"))
+            {
+                record["createdby"] = SecurityContext.CurrentUser.Id;
+            }
+            if (entity.Fields.Exists(x => x.Name == "createdby"))
+            {
+                record["modifiedby"] = SecurityContext.CurrentUser.Id;
+            }
+        }
+        public void OnPreUpdateRecord(string entityName, EntityRecord record, List<ErrorModel> errors)
+        {
+            Entity entity = new EntityManager().ReadEntity(entityName).Object;
+            if (entity.Fields.Exists(x => x.Name == "modifiedon"))
+            {
+                record["modifiedon"] = DateTime.Now;
+            }
+            
+            
+            if (entity.Fields.Exists(x => x.Name == "modifiedby"))
+            {
+                record["modifiedby"] = SecurityContext.CurrentUser.Id;
+            }
+        }
+        
         public void OnDefaultFieldsInit(List<Field> fields,Dictionary<string, Guid> sysFieldIdDictionary)
         {
             GuidField createdBy = new GuidField();
