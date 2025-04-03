@@ -1,0 +1,16 @@
+@using Microsoft.JSInterop
+@using WebVella.Erp.Api.Models;
+
+@inject IJSRuntime JSRuntime;
+@using Radzen
+@using Radzen.Blazor
+@using WebVella.TagHelpers.Models
+
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="0.5rem" class="rz-p-sm-12">
+    @if(FieldOptions.LabelMode != WvLabelRenderMode.Hidden){
+        <RadzenLabel Text="@FieldOptions.LabelText" Component="@FieldOptions.Name"/>
+    }
+    <RadzenDropDown AllowClear="true" @bind-Value=@FieldOptions.Value
+                    LoadData=@LoadData AllowFiltering="true" Placeholder="@FieldOptions.Placeholder"
+                    Data=@options TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Style="width: 100%; max-width: 400px;" Name="@FieldOptions.Name" />
+</RadzenStack>
