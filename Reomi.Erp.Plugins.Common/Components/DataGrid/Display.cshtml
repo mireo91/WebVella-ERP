@@ -22,6 +22,6 @@
     //     fieldModel.ApiUrl = $"/api/v3/en_US/record/{fieldModel.EntityName}/{fieldModel.RecordId}";
 }
 
-<component type="typeof(ReomiDataGrid)" render-mode="ServerPrerendered">
-    This is a test for child content
+<component type="typeof(ReomiDataGrid)" render-mode="ServerPrerendered" param-CustomEqlCommand=@("SELECT id, title, owningbusinessunit, description, parentcategoryid, sequencenumber FROM cdm_common_category ORDER BY sequencenumber asc") param-HierarchicalPropertyKey=@("parentcategoryid")>
+    @* This is a test for child content *@
 </component>
