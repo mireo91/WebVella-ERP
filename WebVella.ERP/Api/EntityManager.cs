@@ -8,6 +8,7 @@ using WebVella.Erp.Api.Models;
 using WebVella.Erp.Api.Models.AutoMapper;
 using WebVella.Erp.Database;
 using WebVella.Erp.Exceptions;
+using WebVella.Erp.Hooks;
 using WebVella.Erp.Utilities;
 using WebVella.Erp.Utilities.Dynamic;
 
@@ -1718,7 +1719,9 @@ namespace WebVella.Erp.Api
 			primaryKeyField.GenerateNewId = true;
 
 			fields.Add(primaryKeyField);
-
+			List<IErpDefaultFields> hookedInstances = HookManager.GetHookedInstances<IErpDefaultFields>(entity.Name);
+			foreach (var inst in hookedInstances)
+				inst.OnDefaultFieldsInit(fields, sysFieldIdDictionary);
 			if (!createOnlyIdField)
 			{
 				GuidField createdBy = new GuidField();
