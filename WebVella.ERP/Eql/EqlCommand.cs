@@ -203,7 +203,7 @@ namespace WebVella.Erp.Eql
 			DataTable dt = new DataTable();
 			var npgsParameters = eqlBuildResult.Parameters.Select(x => x.ToNpgsqlParameter()).ToList();
 			NpgsqlCommand command = null;
-
+			result.EntityRecordName = eqlBuildResult.FromEntity.Name;
 			bool hooksExists = RecordHookManager.ContainsAnyHooksForEntity(eqlBuildResult.FromEntity.Name);
 
 			if (Connection != null)
