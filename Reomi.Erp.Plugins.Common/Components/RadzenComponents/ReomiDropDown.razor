@@ -5,12 +5,69 @@
 @using Radzen
 @using Radzen.Blazor
 @using WebVella.TagHelpers.Models
+@using Microsoft.AspNetCore.Components.Sections
+@using Radzen.Blazor.Rendering
+@inject NotificationService NotificationService
 
-<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="0.5rem" class="rz-p-sm-12">
-    @if(FieldOptions.LabelMode != WvLabelRenderMode.Hidden){
-        <RadzenLabel Text="@FieldOptions.LabelText" Component="@FieldOptions.Name"/>
+@if (FieldOptions.IsVisible == "true")
+{
+
+    @switch (FieldOptions.Mode)
+    {
+        case WvFieldRenderMode.InlineEdit:
+            <SectionOutlet SectionName="field-inline"/>
+            break;
+        case WvFieldRenderMode.Display:
+            <SectionOutlet SectionName="field-display"/>
+            break;
+        default:
+            <SectionOutlet SectionName="field-form"/>
+            break;
     }
-    <RadzenDropDown AllowClear="true" @bind-Value=@FieldOptions.Value
-                    LoadData=@LoadData AllowFiltering="true" Placeholder="@FieldOptions.Placeholder"
-                    Data=@options TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Style="width: 100%; max-width: 400px;" Name="@FieldOptions.Name" />
-</RadzenStack>
+}
+@* @if (FieldOptions.LabelMode != WvLabelRenderMode.Hidden) *@
+@* { *@
+@*     $1$ <RadzenStack Orientation="@Orientation" Gap="0.5rem" class="@FieldOptions.Class"> #1# *@
+@*     $1$     <RadzenLabel Text="@FieldOptions.LabelText" Component="@FieldOptions.Name"/> #1# *@
+@*         <SectionOutlet SectionName="field-inline" /> *@
+@*     // </RadzenStack> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <SectionOutlet SectionName="field" /> *@
+@* } *@
+
+<SectionContent SectionName="field-inline">
+    <RadzenTemplateForm TItem="string" Data=@fieldValue Submit="OnSubmit" @ref="_form">
+        @if (_inlineEditable)
+        {
+            <SectionOutlet SectionName="field-form"/>
+            <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1 rz-mt-3" Click="@((args) => SaveRow())" aria-label="Save"/>
+            <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1 rz-mt-3" Click="@((args) => CancelEdit())" aria-label="Cancel"/>
+        }
+        else
+        {
+            <SectionOutlet SectionName="field-display"/>
+            <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1 rz-mt-3" Click="@(args => EditRow())"/>
+        }
+    </RadzenTemplateForm>
+</SectionContent>
+
+<SectionContent SectionName="field-form">
+        <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldOptions.Name>
+            <RadzenDropDownDataGrid Data=@options TValue="string" AllowClear=@(!_isRequired) AllowSorting="false" @bind-Value=@fieldValue LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Name="@FieldOptions.Name"/>
+            @if (_isRequired)
+            {
+                <RadzenRequiredValidator Component=@FieldOptions.Name Text="Last name is required." Popup=true Style="position: absolute"/>
+            }
+        </RadzenFormField>
+    @* <RadzenDropDown AllowClear="true" @bind-Value=@FieldOptions.Value *@
+    @*                 LoadData=@LoadData AllowFiltering="true" Placeholder="@FieldOptions.Placeholder" *@
+    @*                 Data=@options TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Style="width: 100%; max-width: 400px;" Name="@FieldOptions.Name"/> *@
+</SectionContent>
+
+<SectionContent SectionName="field-display">
+    <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldOptions.Name>
+        <RadzenDropDownDataGrid Disabled="true" Data=@options TValue="string" AllowClear="false" AllowSorting="false" @bind-Value=@fieldValue LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)"/>
+    </RadzenFormField>
+</SectionContent>
