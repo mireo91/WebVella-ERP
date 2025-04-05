@@ -964,7 +964,7 @@ namespace WebVella.Erp.Web.Controllers
 				switch (renderMode)
 				{
 					case "display":
-						var pcContextDisplay = new PageComponentContext(pagebodyNode, pageModel, ComponentMode.Design, options);
+						var pcContextDisplay = new PageComponentContext(pagebodyNode, pageModel, ComponentMode.Display, options);
 						return ViewComponent(type, new { context = pcContextDisplay });
 					case "design":
 						var pcContextDesign = new PageComponentContext(pagebodyNode, pageModel, ComponentMode.Design, options);
