@@ -3,8 +3,6 @@
 @using Radzen
 @using Radzen.Blazor
 
-@using WebVella.Erp.Web.Models
-@using WebVella.Erp.Web.Utils
 @inject NotificationService NotificationService
 @inject HttpClient Client
 
@@ -19,9 +17,9 @@
     <ChildContent>
         @* <Test></Test> *@
         @* @ChildContent *@
-        @foreach (var node in Node?.Nodes)
+        @foreach (var node in Node.Nodes)
         {
-            @RenderNode(node.ComponentName)
+            @RenderNode(node.ComponentName, node)
         }
         @* @dynamicComponent() *@
         @* @await Html.PartialAsync("~/Components/PcSection/Design.cshtml") *@
