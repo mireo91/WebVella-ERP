@@ -53,6 +53,7 @@ namespace Reomi.Erp.Site.Sale
             services.AddRouting(options => { options.LowercaseUrls = true; });
             services.AddRadzenComponents();
             services.AddServerSideBlazor();
+            services.AddHttpClient();
             //CORS policy declaration
             //services.AddCors(options =>
             //{

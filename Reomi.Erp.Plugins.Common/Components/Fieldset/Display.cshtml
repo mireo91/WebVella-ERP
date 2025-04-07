@@ -1,0 +1,28 @@
+@addTagHelper *, WebVella.Erp.Web
+@addTagHelper *, WebVella.TagHelpers
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using Reomi.Erp.Plugins.Common.Components.RadzenComponents
+@using WebVella.Erp.Web.Models;
+@using WebVella.Erp.Web.Components
+@using WebVella.Erp.Web.Utils
+@using RenderMode = Microsoft.AspNetCore.Mvc.Rendering.RenderMode
+
+@* @namespace Reomi.Erp.Plugins.Sale.Components *@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    var options = (PcSection.PcSectionOptions)ViewBag.Options;
+    var node = (PageBodyNode)ViewBag.Node;
+    var componentContext = (PageComponentContext)ViewBag.ComponentContext;
+}
+
+@* @(await Html.RenderComponentAsync<ReomiFieldset>(RenderMode.ServerPrerendered, new *@
+@* { *@
+@*     FieldOptions = options, *@
+@*     ChildContent = Taska() *@
+@* })) *@
+<component type="typeof(ReomiFieldset)" render-mode="ServerPrerendered" param-FieldOptions=@(options) param-Node=@(node)></component>
