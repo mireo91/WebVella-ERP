@@ -11,16 +11,15 @@
                 Expand=@(() => Change("Fieldset expanded")) Collapse=@(() => Change("Fieldset collapsed"))>
     <HeaderTemplate>
         <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
-            <RadzenIcon Icon="account_box"/><b>@FieldOptions.Title</b>
+            @* <RadzenIcon Icon="account_box"/> *@
+            <b>@FieldOptions.Title</b>
         </RadzenStack>
     </HeaderTemplate>
     <ChildContent>
+        @RenderNodes()
         @* <Test></Test> *@
         @* @ChildContent *@
-        @foreach (var node in Node.Nodes)
-        {
-            @RenderNode(node.ComponentName, node)
-        }
+        @* @RenderNodes() *@
         @* @dynamicComponent() *@
         @* @await Html.PartialAsync("~/Components/PcSection/Design.cshtml") *@
         @* <RadzenDataList PageSize="4" WrapItems="true" AllowPaging="true"  *@

@@ -29,12 +29,9 @@ public partial class ReomiDropDown : ComponentBase
 
     [Parameter] public PageBodyNode Node { get; set; }
     
-    public WvLabelRenderMode LabelMode { get; set; } = WvLabelRenderMode.Undefined;
-
-    [JsonProperty(PropertyName = "mode")]
-    public WvFieldRenderMode Mode { get; set; } = WvFieldRenderMode.Undefined;
-    
     private bool _isRequired = false;
+    
+    private bool _isVisible = true;
     
     RadzenTemplateForm<string> _form;
     // [Parameter] public bool IsExpanded { get; set; } = true;
@@ -48,11 +45,12 @@ public partial class ReomiDropDown : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Console.WriteLine("before initialize");
         InitializeFieldOptions();
-        fieldValue = "";
-        Console.WriteLine("after initialize");
-        Console.WriteLine(FieldOptions.ConnectedEntityId);
+        fieldValue = FieldOptions.Value;
+        if (BlazorPageComponentContext.ErpRequestContext.Entity != null)
+        {
+	        if (FieldOptions.Name != null) _isRequired = BlazorPageComponentContext.ErpRequestContext.Entity.Fields.Any(c => c.Name == FieldOptions.Name && c.Required);
+        }
         if (FieldOptions.ConnectedEntityId != null)
         {
 	        
@@ -60,7 +58,12 @@ public partial class ReomiDropDown : ComponentBase
             if( response.Success )
             {
                 _entity = response.Object;
+                var field = _entity.Fields.Find(f => f.Name == FieldOptions.Name);
+                
+                //@todo dynamicznie w zależności od strony trzeba przypisać tą wartość
                 var recordId = "f4d87b41-1fe1-48fe-b091-b2c7e566a8ee";
+                //@endtodo
+                
                 _record = new EqlCommand($"SELECT id, {FieldOptions.Name} FROM {_entity.Name} WHERE id = @id", new EqlParameter("id", recordId)).Execute().FirstOrDefault();
                 if(_record!=null)
                     fieldValue = _record![FieldOptions.Name]!=null?_record[FieldOptions.Name].ToString()!:"";
@@ -138,9 +141,9 @@ public partial class ReomiDropDown : ComponentBase
 	        // new PcField
 	        var baseOptions = pcFieldSelect.InitPcFieldBaseOptions(context);
 	        var options = PcFieldSelect.PcFieldSelectOptions.CopyFromBaseOptions(baseOptions);
-	        if (context.Options != null)
+	        if (Node.Options != null)
 	        {
-		        options = JsonConvert.DeserializeObject<PcFieldSelect.PcFieldSelectOptions>(context.Options.ToString());
+		        options = JsonConvert.DeserializeObject<PcFieldSelect.PcFieldSelectOptions>(Node.Options.ToString());
 		        if (context.Mode != ComponentMode.Options)
 		        {
 			        if (String.IsNullOrWhiteSpace(options.LabelHelpText))
@@ -189,15 +192,15 @@ public partial class ReomiDropDown : ComponentBase
 	        //PcFieldSelectModel model = PcFieldSelectModel.CopyFromBaseModel(baseModel);
 
 	        //Implementing Inherit label mode
-	        LabelMode = options.LabelMode;
-	        Mode = options.Mode;
+	        // LabelMode = options.LabelMode;
+	        // Mode = options.Mode;
 
 	        if (options.LabelMode == WvLabelRenderMode.Undefined &&
 	            baseOptions.LabelMode != WvLabelRenderMode.Undefined)
-		        LabelMode = baseOptions.LabelMode;
+		        options.LabelMode = baseOptions.LabelMode;
 
 	        if (options.Mode == WvFieldRenderMode.Undefined && baseOptions.Mode != WvFieldRenderMode.Undefined)
-		        Mode = baseOptions.Mode;
+		        options.Mode = baseOptions.Mode;
 
 	        var accessOverride =
 		        context.DataModel.GetPropertyValueByDataSource(options.AccessOverrideDs) as WvFieldAccess?;
@@ -227,9 +230,6 @@ public partial class ReomiDropDown : ComponentBase
 	        }
 
 	        #endregion
-	        Console.WriteLine(options.Options);
-	        Console.WriteLine(options.LabelText);
-	        Console.WriteLine(model.Options.Count);
 
 	        // FieldOptions = options;
 	        // Model = model;
@@ -237,12 +237,25 @@ public partial class ReomiDropDown : ComponentBase
 	        if (context.Mode != ComponentMode.Options && context.Mode != ComponentMode.Help)
 	        {
 
+		        var isVisible = true;
+		        var isVisibleDS = context.DataModel.GetPropertyValueByDataSource(options.IsVisible);
+		        if (isVisibleDS is string && !String.IsNullOrWhiteSpace(isVisibleDS.ToString()))
+		        {
+			        if (Boolean.TryParse(isVisibleDS.ToString(), out bool outBool))
+			        {
+				        isVisible = outBool;
+			        }
+		        }
+		        else if (isVisibleDS is Boolean)
+		        {
+			        isVisible = (bool)isVisibleDS;
+		        }
+		        _isVisible = isVisible;
 		        #region << Init DataSources >>
 
 		        model.Value = context.DataModel.GetPropertyValueByDataSource(options.Value);
 
 		        dynamic optionsResult = context.DataModel.GetPropertyValueByDataSource(options.Options);
-
 		        var dataSourceOptions = new List<SelectOption>();
 		        if (optionsResult == null)
 		        {
@@ -332,7 +345,7 @@ public partial class ReomiDropDown : ComponentBase
 
 	        }
 	        FieldOptions = options;
-	        Options = model.Options;
+	        // Options = model.Options;
         // }
         // catch
         // {

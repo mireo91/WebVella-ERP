@@ -48,7 +48,7 @@ public partial class ReomiFieldset : ComponentBase
             var options = new PcSection.PcSectionOptions();
             if (context.Options != null)
             {
-                options = JsonConvert.DeserializeObject<PcSection.PcSectionOptions>(context.Options.ToString());
+                options = JsonConvert.DeserializeObject<PcSection.PcSectionOptions>(Node.Options.ToString());
             }
 
             //Check if it is defined in form group
@@ -230,17 +230,22 @@ public partial class ReomiFieldset : ComponentBase
     //     ["Counter"] = typeof(Test),
     //     ["Weather"] = typeof(Test)
     // };
-
-    private static RenderFragment RenderNode(string componentName, PageBodyNode node) =>
+    
+    private RenderFragment RenderNodes() =>
         async builder =>
     {
-        var helperType = Type.GetType(componentName);
-        var t = Type.GetType($"Reomi.Erp.Plugins.Common.Components.RadzenComponents.Reomi{helperType?.Name}");
-        if (t == null)
-            return;
-        
-        builder.OpenComponent(0, t);
-        builder.AddComponentParameter(0, "Node", node);
-        builder.CloseComponent();
+        int nodeSequence = 0;
+        foreach (var node in Node.Nodes)
+        {
+            
+            var helperType = Type.GetType(node.ComponentName);
+            var t = Type.GetType($"Reomi.Erp.Plugins.Common.Components.RadzenComponents.Reomi{helperType?.Name}");
+            if (t == null)
+                return;
+            builder.OpenComponent(0, t);
+            builder.AddComponentParameter(1, "Node", node);
+            builder.CloseComponent();
+            nodeSequence++;
+        }
     };
 }

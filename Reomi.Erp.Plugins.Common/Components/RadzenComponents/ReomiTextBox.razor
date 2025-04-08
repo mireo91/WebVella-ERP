@@ -26,20 +26,9 @@
             break;
     }
 }
-@* @if (FieldOptions.LabelMode != WvLabelRenderMode.Hidden) *@
-@* { *@
-@*     $1$ <RadzenStack Orientation="@Orientation" Gap="0.5rem" class="@FieldOptions.Class"> #1# *@
-@*     $1$     <RadzenLabel Text="@FieldOptions.LabelText" Component="@FieldOptions.Name"/> #1# *@
-@*         <SectionOutlet SectionName="field-inline" /> *@
-@*     // </RadzenStack> *@
-@* } *@
-@* else *@
-@* { *@
-@*     <SectionOutlet SectionName="field" /> *@
-@* } *@
 
 <SectionContent SectionName=@("field-inline-"+Node.Id)>
-    <RadzenTemplateForm TItem="string" Data=@fieldValue Submit="OnSubmit" @ref="_form">
+    <RadzenTemplateForm TItem="string" Data=@_fieldValue Submit="OnSubmit" @ref="_form">
         @if (_inlineEditable)
         {
             <SectionOutlet SectionName=@("field-form-"+Node.Id)/>
@@ -54,21 +43,21 @@
     </RadzenTemplateForm>
 </SectionContent>
 
-<SectionContent SectionName=@("field-form-"+Node.Id)>
-        <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldOptions.Name>
-            <RadzenDropDownDataGrid Data=@options TValue="string" AllowClear=@(!_isRequired) AllowSorting="false" @bind-Value=@fieldValue LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Name="@FieldOptions.Name"/>
-            @if (_isRequired)
-            {
-                <RadzenRequiredValidator Component=@FieldOptions.Name Text="Last name is required." Popup=true Style="position: absolute"/>
-            }
-        </RadzenFormField>
+<SectionContent SectionName=@("field-form-" + Node.Id)>
+    <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined" Component=@FieldOptions.Name>
+        <RadzenTextBox @bind-Value="@_fieldValue" MaxLength=@(FieldOptions.MaxLength==0?null:FieldOptions.MaxLength) Placeholder=@(FieldOptions.Placeholder) Name=@FieldOptions.Name/>
+        @if (_isRequired)
+        {
+            <RadzenRequiredValidator Component=@FieldOptions.Name Text="This field is required." Popup=true Style="position: absolute"/>
+        }
+    </RadzenFormField>
     @* <RadzenDropDown AllowClear="true" @bind-Value=@FieldOptions.Value *@
     @*                 LoadData=@LoadData AllowFiltering="true" Placeholder="@FieldOptions.Placeholder" *@
     @*                 Data=@options TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Style="width: 100%; max-width: 400px;" Name="@FieldOptions.Name"/> *@
 </SectionContent>
 
-<SectionContent SectionName=@("field-display-"+Node.Id)>
-    <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldOptions.Name>
-        <RadzenDropDownDataGrid Disabled="true" Data=@options TValue="string" AllowClear="false" AllowSorting="false" @bind-Value=@fieldValue LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)"/>
+<SectionContent SectionName=@("field-display-" + Node.Id)>
+    <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined">
+        <RadzenTextBox @bind-Value="@_fieldValue" Disabled="true"/>
     </RadzenFormField>
 </SectionContent>
