@@ -12,9 +12,8 @@
     @inject NotificationService NotificationService
 }
 
-@if (_isVisible)
+@if (IsVisible)
 {
-
     @switch (FieldOptions.Mode)
     {
         case WvFieldRenderMode.InlineEdit:
@@ -41,8 +40,8 @@
 @* } *@
 
 <SectionContent SectionName=@("field-inline-"+Context.Node.Id)>
-    <RadzenTemplateForm TItem="string" Data=@fieldValue Submit="OnSubmit" @ref="_form">
-        @if (_inlineEditable)
+    <RadzenTemplateForm TItem="BlazorForm" Data=@Context.FormData Submit="OnSubmit" @ref="Form">
+        @if (IsInlineEditable)
         {
             <SectionOutlet SectionName=@("field-form-"+Context.Node.Id)/>
             <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1 rz-mt-3" Click="@((args) => SaveRow())" aria-label="Save"/>
@@ -57,11 +56,11 @@
 </SectionContent>
 
 <SectionContent SectionName=@("field-form-"+Context.Node.Id)>
-        <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldOptions.Name>
-            <RadzenDropDownDataGrid Data=@options TValue="string" AllowClear=@(!_isRequired) AllowSorting="false" @bind-Value=@fieldValue LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Name="@FieldOptions.Name"/>
-            @if (_isRequired)
+        <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldName>
+            <RadzenDropDownDataGrid Data=@options TValue="string" AllowClear=@(!IsRequired) AllowSorting="false" @bind-Value=@Context.FormData![FieldName] LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Name="@FieldName"/>
+            @if (IsRequired)
             {
-                <RadzenRequiredValidator Component=@FieldOptions.Name Text="Last name is required." Popup=true Style="position: absolute"/>
+                <RadzenRequiredValidator Component=@FieldName Text="Last name is required." Popup=true Style="position: absolute"/>
             }
         </RadzenFormField>
     @* <RadzenDropDown AllowClear="true" @bind-Value=@FieldOptions.Value *@
@@ -70,7 +69,7 @@
 </SectionContent>
 
 <SectionContent SectionName=@("field-display-"+Context.Node.Id)>
-    <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldOptions.Name>
-        <RadzenDropDownDataGrid Disabled="true" Data=@options TValue="string" AllowClear="false" AllowSorting="false" @bind-Value=@fieldValue LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)"/>
+    <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldName>
+        <RadzenDropDownDataGrid Disabled="true" Data=@options TValue="string" AllowClear="false" AllowSorting="false" @bind-Value=@Context.FormData![FieldName] LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)"/>
     </RadzenFormField>
 </SectionContent>

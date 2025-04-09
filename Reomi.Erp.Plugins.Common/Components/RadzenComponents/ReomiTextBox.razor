@@ -1,20 +1,18 @@
-@using System.Text.Json
+
 @using Microsoft.JSInterop
-@using WebVella.Erp.Api.Models;
 
 @inject IJSRuntime JSRuntime;
 @using Radzen
 @using Radzen.Blazor
 @using WebVella.TagHelpers.Models
 @using Microsoft.AspNetCore.Components.Sections
-@using Reomi.Erp.Plugins.Common.Hooks
 @inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcFieldText.PcFieldTextOptions>
 
-@if(FieldOptions.Mode == WvFieldRenderMode.InlineEdit){
+@if(FieldOptions!.Mode == WvFieldRenderMode.InlineEdit){
     @inject NotificationService NotificationService
 }
 
-@if (_isVisible)
+@if (IsVisible)
 {
 
     @switch (FieldOptions.Mode)
@@ -32,8 +30,8 @@
 }
 
 <SectionContent SectionName=@("field-inline-"+Context.Node.Id)>
-    <RadzenTemplateForm TItem="string" Data=@_fieldValue Submit="OnSubmit" @ref="_form">
-        @if (_inlineEditable)
+    <RadzenTemplateForm TItem="BlazorForm" Data=@Context.FormData Submit="OnSubmit" @ref="Form">
+        @if (IsInlineEditable)
         {
             <SectionOutlet SectionName=@("field-form-"+Context.Node.Id)/>
             <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1 rz-mt-3" Click="@((args) => SaveRow())" aria-label="Save"/>
@@ -48,11 +46,11 @@
 </SectionContent>
 
 <SectionContent SectionName=@("field-form-" + Context.Node.Id)>
-    <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined" Component=@FieldOptions.Name>
-        <RadzenTextBox @bind-Value="@_fieldValue" MaxLength=@(FieldOptions.MaxLength==0?null:FieldOptions.MaxLength) Placeholder=@(FieldOptions.Placeholder) Name=@FieldOptions.Name/>
-        @if (_isRequired)
+    <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined" Component=@FieldName>
+        <RadzenTextBox @bind-Value=@Context.FormData![FieldName] MaxLength=@(FieldOptions.MaxLength==0?null:FieldOptions.MaxLength) Placeholder=@(FieldOptions.Placeholder) Name=@FieldName/>
+        @if (IsRequired)
         {
-            <RadzenRequiredValidator Component=@FieldOptions.Name Text="This field is required." Popup=true Style="position: absolute"/>
+            <RadzenRequiredValidator Component=@FieldName Text="This field is required." Popup=true Style="position: absolute"/>
         }
     </RadzenFormField>
     @* <RadzenDropDown AllowClear="true" @bind-Value=@FieldOptions.Value *@
@@ -62,6 +60,6 @@
 
 <SectionContent SectionName=@("field-display-" + Context.Node.Id)>
     <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined">
-        <RadzenTextBox @bind-Value="@_fieldValue" Disabled="true"/>
+        <RadzenTextBox @bind-Value=@Context.FormData![FieldName] Disabled="true"/>
     </RadzenFormField>
 </SectionContent>

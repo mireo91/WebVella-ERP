@@ -1,3 +1,4 @@
+@using System.Text.Json
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime;
 @using Radzen
@@ -9,22 +10,23 @@
 
 @if (IsVisible)
 {
-    <RadzenFieldset AllowCollapse="@FieldOptions.IsCollapsable" Collapsed="@FieldOptions.IsCollapsed" ExpandTitle="Expand fieldset." CollapseTitle="Collapse fieldset."
-                    ExpandAriaLabel="Expand fieldset." CollapseAriaLabel="Collapse fieldset."
-                    Expand=@(() => Change("Fieldset expanded")) Collapse=@(() => Change("Fieldset collapsed"))>
-        <HeaderTemplate>
-            <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
-                @* <RadzenIcon Icon="account_box"/> *@
-                <b>@FieldOptions.Title</b>
-            </RadzenStack>
-        </HeaderTemplate>
-        <ChildContent>
-            @RenderNodes()
-        </ChildContent>
-        @* <SummaryTemplate> *@
-        @*     <RadzenCard class="rz-mt-4"> *@
-        @*         <b>@orders.Count() Orders</b> *@
-        @*     </RadzenCard> *@
-        @* </SummaryTemplate> *@
-    </RadzenFieldset>
+        <RadzenFieldset AllowCollapse="@FieldOptions.IsCollapsable" Collapsed="@FieldOptions.IsCollapsed" ExpandTitle="Expand fieldset." CollapseTitle="Collapse fieldset."
+                        ExpandAriaLabel="Expand fieldset." CollapseAriaLabel="Collapse fieldset."
+                        Expand=@(() => Change("Fieldset expanded")) Collapse=@(() => Change("Fieldset collapsed"))>
+            <HeaderTemplate>
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
+                    @* <RadzenIcon Icon="account_box"/> *@
+                    <b>@FieldOptions.Title</b>
+                </RadzenStack>
+            </HeaderTemplate>
+            <ChildContent>
+                @RenderNodes()
+            </ChildContent>
+            @* <SummaryTemplate> *@
+            @*     <RadzenCard class="rz-mt-4"> *@
+            @*         <b>@orders.Count() Orders</b> *@
+            @*     </RadzenCard> *@
+            @* </SummaryTemplate> *@
+        </RadzenFieldset>
+
 }

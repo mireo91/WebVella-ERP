@@ -15,95 +15,11 @@ namespace Reomi.Erp.Plugins.Common.Components.RadzenComponents;
 
 public partial class ReomiTextBox : ReomiFieldComponentBase<PcFieldText.PcFieldTextOptions>
 {
-    public PcFieldText.PcFieldTextOptions FieldOptions { get; set; }
-    // [Parameter] public PageBodyNode Node { get; set; }
     
     private bool _isRequired = false;
-    private bool _isVisible = true;
-    string _fieldValue = String.Empty;
-    RadzenTemplateForm<string> _form;
-    private Entity? _entity = null;
-    private EntityRecord? _record = null;
-    object? _inlineEditablePreviousValue = null;
-    private bool _inlineEditable = false;
+    // private bool _isVisible = true;
 
-    protected override void OnInitialized()
-    {
-	    base.OnInitialized();
-	    // InitializeFieldOptions();
-	    // _fieldValue = FieldOptions.Value;
-	    // if (!BlazorPageComponentContext.ModelForm.ContainsKey("FirstName"))
-	    // {
-		   //  BlazorPageComponentContext.ModelForm.Add("FirstName", _fieldValue);
-		   //  BlazorPageComponentContext.ModelForm.Add("LastName", _fieldValue);
-	    // }
-
-	    // FieldOptions.ConnectedEntityId ??= BlazorPageComponentContext.ErpRequestContext.RecordId;
-	    // if (_entity != null)
-	    // {
-		   //  if (FieldOptions.Name != null) _isRequired = _entity.Fields.Any(c => c.Name == FieldOptions.Name && c.Required);
-	    // }
-	    // if (FieldOptions.ConnectedEntityId != null)
-	    // {
-	    //     
-		   //  var response = (new EntityManager()).ReadEntity((Guid)FieldOptions.ConnectedEntityId!);
-		   //  if( response.Success )
-		   //  {
-			  //   _entity = response.Object;
-			  //   var field = _entity.Fields.Find(f => f.Name == FieldOptions.Name);
-     //            
-			  //   //@todo dynamicznie w zależności od strony trzeba przypisać tą wartość
-			  //   var recordId = "f4d87b41-1fe1-48fe-b091-b2c7e566a8ee";
-			  //   //@endtodo
-     //            
-			  //   _record = new EqlCommand($"SELECT id, {FieldOptions.Name} FROM {_entity.Name} WHERE id = @id", new EqlParameter("id", recordId)).Execute().FirstOrDefault();
-			  //   if(_record!=null)
-				 //    fieldValue = _record![FieldOptions.Name]!=null?_record[FieldOptions.Name].ToString()!:"";
-			  //   if (FieldOptions.Name != null) _isRequired = _entity.Fields.Any(c => c.Name == FieldOptions.Name && c.Required);
-		   //  }
-	    // }
-    }
-
-    async Task EditRow()
-    {
-        _inlineEditablePreviousValue = _fieldValue;
-        _inlineEditable = true;
-    }
-    async Task SaveRow()
-    {
-        _inlineEditable = false;
-        await _form.Submit.InvokeAsync(_fieldValue);
-    }
-
-    void CancelEdit()
-    {
-        _inlineEditable = false;
-        _fieldValue = _inlineEditablePreviousValue.ToString();
-    }
-    
-    void OnSubmit(object value)
-    {
-        if (_entity == null) return;
-        if (_record == null) return;
-        _record[FieldOptions.Name] = value;
-        var response = (new RecordManager()).UpdateRecord(_entity?.Name, _record);
-        var message = new NotificationMessage
-        {
-            Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = response.Message,
-            Duration = 4000
-        };
-        if (!response.Success)
-        {
-            message = new NotificationMessage
-            {
-                Severity = NotificationSeverity.Error, Summary = "Error Summary", Detail = response.Message,
-                Duration = 4000
-            };
-        }
-        
-        NotificationService.Notify(message);
-    }
-    protected override void InitializeFieldOptions()
+    protected override PcFieldText.PcFieldTextOptions InitializeFieldOptions()
     {
 	    var context = BlazorPageComponentContext.PageComponentContext;
 	    var pcFieldText = new PcFieldText(BlazorPageComponentContext.ErpRequestContext);
@@ -157,7 +73,7 @@ public partial class ReomiTextBox : ReomiFieldComponentBase<PcFieldText.PcFieldT
 			options.Mode = baseOptions.Mode;
   
   
-		var componentMeta = new PageComponentLibraryService().GetComponentMeta(context.Node.ComponentName);
+		// var componentMeta = new PageComponentLibraryService().GetComponentMeta(context.Node.ComponentName);
   
 		var accessOverride = context.DataModel.GetPropertyValueByDataSource(options.AccessOverrideDs) as WvFieldAccess?;
 		if(accessOverride != null){
@@ -180,8 +96,6 @@ public partial class ReomiTextBox : ReomiFieldComponentBase<PcFieldText.PcFieldT
   
 		#endregion
   
-		FieldOptions = options;
-  
 		if (context.Mode != ComponentMode.Options && context.Mode != ComponentMode.Help)
 		{
 			model.Value = context.DataModel.GetPropertyValueByDataSource(options.Value);
@@ -199,9 +113,9 @@ public partial class ReomiTextBox : ReomiFieldComponentBase<PcFieldText.PcFieldT
 			{
 				isVisible = (bool)isVisibleDS;
 			}
-			_isVisible = isVisible;
+			IsVisible = isVisible;
 		}
-  
-		_entity = BlazorPageComponentContext.ErpRequestContext.Entity;
+
+		return options;
     }
 }

@@ -20,58 +20,10 @@ namespace Reomi.Erp.Plugins.Common.Components.RadzenComponents;
 
 public partial class ReomiDropDown : ReomiFieldComponentBase<PcFieldSelect.PcFieldSelectOptions>
 {
-    // [Parameter]
-    public string Value { get; set; } = string.Empty;
     [Parameter]
     public List<SelectOption> Options { get; set; } = new List<SelectOption>();
-    // [Parameter]
-    // public PcFieldSelect.PcFieldSelectOptions FieldOptions { get; set; }
 
-    // [Parameter] public PageBodyNode Node { get; set; }
-    
-    private bool _isRequired = false;
-    
-    private bool _isVisible = true;
-    
-    RadzenTemplateForm<string> _form;
     IEnumerable<SelectOption> options;
-    string fieldValue = String.Empty;
-
-    private Entity? _entity = null;
-    private EntityRecord? _record = null;
-    protected void AfterOnInitialized()
-    {
-        // InitializeFieldOptions();
-        fieldValue = FieldOptions.Value;
-        if (BlazorPageComponentContext.ErpRequestContext.Entity != null)
-        {
-	        if (FieldOptions.Name != null) _isRequired = BlazorPageComponentContext.ErpRequestContext.Entity.Fields.Any(c => c.Name == FieldOptions.Name && c.Required);
-        }
-        if (FieldOptions.ConnectedEntityId != null)
-        {
-	        
-            var response = (new EntityManager()).ReadEntity((Guid)FieldOptions.ConnectedEntityId!);
-            if( response.Success )
-            {
-                _entity = response.Object;
-                var field = _entity.Fields.Find(f => f.Name == FieldOptions.Name);
-                
-                //@todo dynamicznie w zależności od strony trzeba przypisać tą wartość
-                var recordId = "f4d87b41-1fe1-48fe-b091-b2c7e566a8ee";
-                //@endtodo
-                
-                _record = new EqlCommand($"SELECT id, {FieldOptions.Name} FROM {_entity.Name} WHERE id = @id", new EqlParameter("id", recordId)).Execute().FirstOrDefault();
-                if(_record!=null)
-                    fieldValue = _record![FieldOptions.Name]!=null?_record[FieldOptions.Name].ToString()!:"";
-                if (FieldOptions.Name != null) _isRequired = _entity.Fields.Any(c => c.Name == FieldOptions.Name && c.Required);
-            }
-        }
-        // FieldOptions.
-        // FieldOptions.ConnectedEntityId
-        // Console.WriteLine(Model.AjaxDatasourceApi);
-        // Console.WriteLine(Model.AjaxDatasourceApi);
-        // Console.WriteLine(Model.AjaxApiUrlDs);
-    }
 
     // protected override void InitializeFieldOptions()
     // {
@@ -91,49 +43,7 @@ public partial class ReomiDropDown : ReomiFieldComponentBase<PcFieldSelect.PcFie
         InvokeAsync(StateHasChanged);
     }
     
-    void OnSubmit(object value)
-    {
-        if (_entity == null) return;
-        if (_record == null) return;
-        _record[FieldOptions.Name] = value;
-        var response = (new RecordManager()).UpdateRecord(_entity?.Name, _record);
-        var message = new NotificationMessage
-        {
-            Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = response.Message,
-            Duration = 4000
-        };
-        if (!response.Success)
-        {
-            message = new NotificationMessage
-            {
-                Severity = NotificationSeverity.Error, Summary = "Error Summary", Detail = response.Message,
-                Duration = 4000
-            };
-        }
-        
-        NotificationService.Notify(message);
-    }
-    object? _inlineEditablePreviousValue = null;
-
-    private bool _inlineEditable = false;
-    async Task EditRow()
-    {
-        _inlineEditablePreviousValue = fieldValue;
-        _inlineEditable = true;
-    }
-    async Task SaveRow()
-    {
-        _inlineEditable = false;
-        await _form.Submit.InvokeAsync(fieldValue);
-    }
-
-    void CancelEdit()
-    {
-        _inlineEditable = false;
-        fieldValue = _inlineEditablePreviousValue.ToString();
-    }
-    
-    protected override void InitializeFieldOptions()
+    protected override PcFieldSelect.PcFieldSelectOptions InitializeFieldOptions()
     {
 	    var context = BlazorPageComponentContext.PageComponentContext;
 	    var pcFieldSelect = new PcFieldSelect(BlazorPageComponentContext.ErpRequestContext);
@@ -252,7 +162,7 @@ public partial class ReomiDropDown : ReomiFieldComponentBase<PcFieldSelect.PcFie
 		        {
 			        isVisible = (bool)isVisibleDS;
 		        }
-		        _isVisible = isVisible;
+		        IsVisible = isVisible;
 		        #region << Init DataSources >>
     
 		        model.Value = context.DataModel.GetPropertyValueByDataSource(options.Value);
@@ -346,13 +256,14 @@ public partial class ReomiDropDown : ReomiFieldComponentBase<PcFieldSelect.PcFie
 		        #endregion
     
 	        }
-	        FieldOptions = options;
+	        // FieldOptions = options;
 	        // Options = model.Options;
         // }
         // catch
         // {
 	       //  // ignored
         // }
-        AfterOnInitialized();
+        // AfterOnInitialized();
+        return options;
     }
 }

@@ -1,0 +1,27 @@
+@using System.Text.Json
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime;
+@using Radzen
+@using Radzen.Blazor
+
+@inject NotificationService NotificationService
+@inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcForm.PcFormOptions>
+@inject HttpClient Client
+
+<div id=@(FieldOptions.Id != null ? FieldOptions.Id : Context.Node.Id)>
+    <RadzenTemplateForm TItem="BlazorForm" Data=@Context.FormData Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit Action=""Method="POST">
+        @RenderNodes()
+    </RadzenTemplateForm>
+</div>
+
+@code {
+    void OnSubmit(Dictionary<string,string> model)
+    {
+        Console.WriteLine($"Submit: {JsonSerializer.Serialize(model, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+}

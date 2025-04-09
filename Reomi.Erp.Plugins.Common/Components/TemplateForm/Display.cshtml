@@ -1,0 +1,29 @@
+@addTagHelper *, WebVella.Erp.Web
+@addTagHelper *, WebVella.TagHelpers
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using Newtonsoft.Json.Linq
+@using Reomi.Erp.Plugins.Common
+@using Reomi.Erp.Plugins.Common.Components.RadzenComponents
+@* @using Reomi.Erp.Plugins.Common.Hooks *@
+@using WebVella.Erp.Web
+@using WebVella.Erp.Web.Models;
+@using WebVella.Erp.Web.Components
+@using WebVella.Erp.Web.Utils
+@* @using BlazorPageComponentContext = Reomi.Erp.Plugins.Common.BlazorPageComponentContext *@
+@using RenderMode = Microsoft.AspNetCore.Mvc.Rendering.RenderMode
+@{
+    var node = (PageBodyNode)ViewBag.Node;
+    var componentContext = (PageComponentContext)ViewBag.ComponentContext;
+    var requestContext = (ErpRequestContext)ViewBag.RequestContext;
+    BlazorPageComponentContext.ErpRequestContext = requestContext;
+    BlazorPageComponentContext.PageComponentContext = componentContext;
+    // var blazorComponentContext = new BlazorPageComponentContext(componentContext, requestContext,node);
+}
+
+@(await Html.RenderComponentAsync<ReomiTemplateForm>(RenderMode.ServerPrerendered, new { Context = new BlazorPageComponentContext(node) }))
