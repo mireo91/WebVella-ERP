@@ -209,7 +209,7 @@ public class Fieldset : PageComponent
 
 				context.Items[typeof(WvLabelRenderMode)] = options.LabelMode;
 				context.Items[typeof(WvFieldRenderMode)] = options.FieldMode;
-				BlazorPageComponentContext.Initialize(ref context, ErpRequestContext);
+				// BlazorPageComponentContext.Initialize(ref context, ErpRequestContext);
 				switch (context.Mode)
 				{
 					case ComponentMode.Display:

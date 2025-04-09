@@ -18,34 +18,30 @@ using RecordManager = WebVella.Erp.Api.RecordManager;
 
 namespace Reomi.Erp.Plugins.Common.Components.RadzenComponents;
 
-public partial class ReomiDropDown : ComponentBase
+public partial class ReomiDropDown : ReomiFieldComponentBase<PcFieldSelect.PcFieldSelectOptions>
 {
-    [Parameter]
+    // [Parameter]
     public string Value { get; set; } = string.Empty;
     [Parameter]
     public List<SelectOption> Options { get; set; } = new List<SelectOption>();
-    [Parameter]
-    public PcFieldSelect.PcFieldSelectOptions FieldOptions { get; set; }
+    // [Parameter]
+    // public PcFieldSelect.PcFieldSelectOptions FieldOptions { get; set; }
 
-    [Parameter] public PageBodyNode Node { get; set; }
+    // [Parameter] public PageBodyNode Node { get; set; }
     
     private bool _isRequired = false;
     
     private bool _isVisible = true;
     
     RadzenTemplateForm<string> _form;
-    // [Parameter] public bool IsExpanded { get; set; } = true;
-    // [Parameter] public bool IsEditable { get; set; } = true;
-    // [Parameter] public string? CustomEqlCommand { get; set; }
     IEnumerable<SelectOption> options;
     string fieldValue = String.Empty;
 
     private Entity? _entity = null;
     private EntityRecord? _record = null;
-    protected override void OnInitialized()
+    protected void AfterOnInitialized()
     {
-        base.OnInitialized();
-        InitializeFieldOptions();
+        // InitializeFieldOptions();
         fieldValue = FieldOptions.Value;
         if (BlazorPageComponentContext.ErpRequestContext.Entity != null)
         {
@@ -76,6 +72,12 @@ public partial class ReomiDropDown : ComponentBase
         // Console.WriteLine(Model.AjaxDatasourceApi);
         // Console.WriteLine(Model.AjaxApiUrlDs);
     }
+
+    // protected override void InitializeFieldOptions()
+    // {
+	   //  throw new NotImplementedException();
+    // }
+
     void LoadData(LoadDataArgs args)
     {
         var query = Options;
@@ -131,9 +133,9 @@ public partial class ReomiDropDown : ComponentBase
         fieldValue = _inlineEditablePreviousValue.ToString();
     }
     
-    private void InitializeFieldOptions()
+    protected override void InitializeFieldOptions()
     {
-	    var context = BlazorPageComponentContext.CurrentPageContext;
+	    var context = BlazorPageComponentContext.PageComponentContext;
 	    var pcFieldSelect = new PcFieldSelect(BlazorPageComponentContext.ErpRequestContext);
 	    // try
         // {
@@ -141,19 +143,19 @@ public partial class ReomiDropDown : ComponentBase
 	        // new PcField
 	        var baseOptions = pcFieldSelect.InitPcFieldBaseOptions(context);
 	        var options = PcFieldSelect.PcFieldSelectOptions.CopyFromBaseOptions(baseOptions);
-	        if (Node.Options != null)
+	        if (Context.Node.Options != null)
 	        {
-		        options = JsonConvert.DeserializeObject<PcFieldSelect.PcFieldSelectOptions>(Node.Options.ToString());
+		        options = JsonConvert.DeserializeObject<PcFieldSelect.PcFieldSelectOptions>(Context.Node.Options.ToString());
 		        if (context.Mode != ComponentMode.Options)
 		        {
 			        if (String.IsNullOrWhiteSpace(options.LabelHelpText))
 				        options.LabelHelpText = baseOptions.LabelHelpText;
-
+    
 			        if (String.IsNullOrWhiteSpace(options.Description))
 				        options.Description = baseOptions.Description;
-
+    
 		        }
-
+    
 		        ////Check for connection to entity field
 		        //if (instanceOptions.TryConnectToEntity)
 		        //{
@@ -181,7 +183,7 @@ public partial class ReomiDropDown : ComponentBase
 			        options.Href = link;
 		        }
 	        }
-		
+		  
 	        var modelFieldLabel = "";
 	        var model = (PcFieldBase.PcFieldSelectModel)pcFieldSelect.InitPcFieldBaseModel(context, options, label: out modelFieldLabel,
 		        targetModel: "PcFieldSelectModel");
@@ -190,25 +192,25 @@ public partial class ReomiDropDown : ComponentBase
 		        options.LabelText = modelFieldLabel;
 	        }
 	        //PcFieldSelectModel model = PcFieldSelectModel.CopyFromBaseModel(baseModel);
-
+    
 	        //Implementing Inherit label mode
 	        // LabelMode = options.LabelMode;
 	        // Mode = options.Mode;
-
+    
 	        if (options.LabelMode == WvLabelRenderMode.Undefined &&
 	            baseOptions.LabelMode != WvLabelRenderMode.Undefined)
 		        options.LabelMode = baseOptions.LabelMode;
-
+    
 	        if (options.Mode == WvFieldRenderMode.Undefined && baseOptions.Mode != WvFieldRenderMode.Undefined)
 		        options.Mode = baseOptions.Mode;
-
+    
 	        var accessOverride =
 		        context.DataModel.GetPropertyValueByDataSource(options.AccessOverrideDs) as WvFieldAccess?;
 	        if (accessOverride != null)
 	        {
 		        model.Access = accessOverride.Value;
 	        }
-
+    
 	        var requiredOverride = context.DataModel.GetPropertyValueByDataSource(options.RequiredOverrideDs) as bool?;
 	        if (requiredOverride != null)
 	        {
@@ -228,15 +230,15 @@ public partial class ReomiDropDown : ComponentBase
 			        }
 		        }
 	        }
-
+    
 	        #endregion
-
+    
 	        // FieldOptions = options;
 	        // Model = model;
-
+    
 	        if (context.Mode != ComponentMode.Options && context.Mode != ComponentMode.Help)
 	        {
-
+    
 		        var isVisible = true;
 		        var isVisibleDS = context.DataModel.GetPropertyValueByDataSource(options.IsVisible);
 		        if (isVisibleDS is string && !String.IsNullOrWhiteSpace(isVisibleDS.ToString()))
@@ -252,20 +254,20 @@ public partial class ReomiDropDown : ComponentBase
 		        }
 		        _isVisible = isVisible;
 		        #region << Init DataSources >>
-
+    
 		        model.Value = context.DataModel.GetPropertyValueByDataSource(options.Value);
-
+    
 		        dynamic optionsResult = context.DataModel.GetPropertyValueByDataSource(options.Options);
 		        var dataSourceOptions = new List<SelectOption>();
 		        if (optionsResult == null)
 		        {
 		        }
-
+    
 		        if (optionsResult is List<SelectOption>)
 		        {
 			        dataSourceOptions = (List<SelectOption>)optionsResult;
 		        }
-
+    
 		        if (optionsResult is List<WvSelectOption>)
 		        {
 			        foreach (var option in (List<WvSelectOption>)optionsResult)
@@ -287,7 +289,7 @@ public partial class ReomiDropDown : ComponentBase
 				        dataSourceOptions = new List<SelectOption>();
 				        stringProcessed = true;
 			        }
-
+    
 			        //AJAX Options
 			        if (!stringProcessed && ((string)optionsResult).StartsWith("{"))
 			        {
@@ -301,10 +303,10 @@ public partial class ReomiDropDown : ComponentBase
 				        }
 				        catch
 				        {
-
+    
 				        }
 			        }
-
+    
 			        if (!stringProcessed && (((string)optionsResult).StartsWith("{") ||
 			                                 ((string)optionsResult).StartsWith("[")))
 			        {
@@ -321,7 +323,7 @@ public partial class ReomiDropDown : ComponentBase
 					        //  Content("Error: Options Json De-serialization failed!"));
 				        }
 			        }
-
+    
 			        if (!stringProcessed && ((string)optionsResult).Contains(",") &&
 			            !((string)optionsResult).Contains("{") && !((string)optionsResult).Contains("["))
 			        {
@@ -331,18 +333,18 @@ public partial class ReomiDropDown : ComponentBase
 				        {
 					        optionsList.Add(new SelectOption(optionString, optionString));
 				        }
-
+    
 				        dataSourceOptions = optionsList;
 			        }
 		        }
-
+    
 		        if (dataSourceOptions.Count > 0)
 		        {
 			        Options = dataSourceOptions;
 		        }
-
+    
 		        #endregion
-
+    
 	        }
 	        FieldOptions = options;
 	        // Options = model.Options;
@@ -351,5 +353,6 @@ public partial class ReomiDropDown : ComponentBase
         // {
 	       //  // ignored
         // }
+        AfterOnInitialized();
     }
 }

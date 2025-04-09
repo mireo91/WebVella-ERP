@@ -1,3 +1,4 @@
+@using System.Text.Json
 @using Microsoft.JSInterop
 @using WebVella.Erp.Api.Models;
 
@@ -6,6 +7,9 @@
 @using Radzen.Blazor
 @using WebVella.TagHelpers.Models
 @using Microsoft.AspNetCore.Components.Sections
+@using Reomi.Erp.Plugins.Common.Hooks
+@inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcFieldText.PcFieldTextOptions>
+
 @if(FieldOptions.Mode == WvFieldRenderMode.InlineEdit){
     @inject NotificationService NotificationService
 }
@@ -16,34 +20,34 @@
     @switch (FieldOptions.Mode)
     {
         case WvFieldRenderMode.InlineEdit:
-            <SectionOutlet SectionName=@("field-inline-"+Node.Id)/>
+            <SectionOutlet SectionName=@("field-inline-"+Context.Node.Id)/>
             break;
         case WvFieldRenderMode.Display:
-            <SectionOutlet SectionName=@("field-display-"+Node.Id)/>
+            <SectionOutlet SectionName=@("field-display-"+Context.Node.Id)/>
             break;
         default:
-            <SectionOutlet SectionName=@("field-form-"+Node.Id)/>
+            <SectionOutlet SectionName=@("field-form-"+Context.Node.Id)/>
             break;
     }
 }
 
-<SectionContent SectionName=@("field-inline-"+Node.Id)>
+<SectionContent SectionName=@("field-inline-"+Context.Node.Id)>
     <RadzenTemplateForm TItem="string" Data=@_fieldValue Submit="OnSubmit" @ref="_form">
         @if (_inlineEditable)
         {
-            <SectionOutlet SectionName=@("field-form-"+Node.Id)/>
+            <SectionOutlet SectionName=@("field-form-"+Context.Node.Id)/>
             <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1 rz-mt-3" Click="@((args) => SaveRow())" aria-label="Save"/>
             <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1 rz-mt-3" Click="@((args) => CancelEdit())" aria-label="Cancel"/>
         }
         else
         {
-            <SectionOutlet SectionName=@("field-display-"+Node.Id)/>
+            <SectionOutlet SectionName=@("field-display-"+Context.Node.Id)/>
             <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1 rz-mt-3" Click="@(args => EditRow())"/>
         }
     </RadzenTemplateForm>
 </SectionContent>
 
-<SectionContent SectionName=@("field-form-" + Node.Id)>
+<SectionContent SectionName=@("field-form-" + Context.Node.Id)>
     <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined" Component=@FieldOptions.Name>
         <RadzenTextBox @bind-Value="@_fieldValue" MaxLength=@(FieldOptions.MaxLength==0?null:FieldOptions.MaxLength) Placeholder=@(FieldOptions.Placeholder) Name=@FieldOptions.Name/>
         @if (_isRequired)
@@ -56,7 +60,7 @@
     @*                 Data=@options TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Style="width: 100%; max-width: 400px;" Name="@FieldOptions.Name"/> *@
 </SectionContent>
 
-<SectionContent SectionName=@("field-display-" + Node.Id)>
+<SectionContent SectionName=@("field-display-" + Context.Node.Id)>
     <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined">
         <RadzenTextBox @bind-Value="@_fieldValue" Disabled="true"/>
     </RadzenFormField>

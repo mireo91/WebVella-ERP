@@ -13,8 +13,7 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     var node = (PageBodyNode)ViewBag.Node;
-    ViewBag.
-    BlazorPageComponentContext.Initialize();
+    var context = (ErpRequestContext)ViewBag.RequestContext;
 }
 
 <component type="typeof(ReomiTextBox)" render-mode="ServerPrerendered" param-Node=@(node)>

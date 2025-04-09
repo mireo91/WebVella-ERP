@@ -13,10 +13,10 @@ using WebVella.TagHelpers.Models;
 
 namespace Reomi.Erp.Plugins.Common.Components.RadzenComponents;
 
-public partial class ReomiTextBox : ComponentBase
+public partial class ReomiTextBox : ReomiFieldComponentBase<PcFieldText.PcFieldTextOptions>
 {
     public PcFieldText.PcFieldTextOptions FieldOptions { get; set; }
-    [Parameter] public PageBodyNode Node { get; set; }
+    // [Parameter] public PageBodyNode Node { get; set; }
     
     private bool _isRequired = false;
     private bool _isVisible = true;
@@ -30,13 +30,19 @@ public partial class ReomiTextBox : ComponentBase
     protected override void OnInitialized()
     {
 	    base.OnInitialized();
-	    InitializeFieldOptions();
-	    _fieldValue = FieldOptions.Value;
-	    FieldOptions.ConnectedEntityId ??= BlazorPageComponentContext.ErpRequestContext.RecordId;
-	    if (_entity != null)
-	    {
-		    if (FieldOptions.Name != null) _isRequired = _entity.Fields.Any(c => c.Name == FieldOptions.Name && c.Required);
-	    }
+	    // InitializeFieldOptions();
+	    // _fieldValue = FieldOptions.Value;
+	    // if (!BlazorPageComponentContext.ModelForm.ContainsKey("FirstName"))
+	    // {
+		   //  BlazorPageComponentContext.ModelForm.Add("FirstName", _fieldValue);
+		   //  BlazorPageComponentContext.ModelForm.Add("LastName", _fieldValue);
+	    // }
+
+	    // FieldOptions.ConnectedEntityId ??= BlazorPageComponentContext.ErpRequestContext.RecordId;
+	    // if (_entity != null)
+	    // {
+		   //  if (FieldOptions.Name != null) _isRequired = _entity.Fields.Any(c => c.Name == FieldOptions.Name && c.Required);
+	    // }
 	    // if (FieldOptions.ConnectedEntityId != null)
 	    // {
 	    //     
@@ -97,9 +103,9 @@ public partial class ReomiTextBox : ComponentBase
         
         NotificationService.Notify(message);
     }
-    private void InitializeFieldOptions()
+    protected override void InitializeFieldOptions()
     {
-	    var context = BlazorPageComponentContext.CurrentPageContext;
+	    var context = BlazorPageComponentContext.PageComponentContext;
 	    var pcFieldText = new PcFieldText(BlazorPageComponentContext.ErpRequestContext);
         #region << Init >>
 		
@@ -107,18 +113,18 @@ public partial class ReomiTextBox : ComponentBase
 		var options = PcFieldText.PcFieldTextOptions.CopyFromBaseOptions(baseOptions);
 		if (context.Options != null)
 		{
-			options = JsonConvert.DeserializeObject<PcFieldText.PcFieldTextOptions>(Node.Options);
+			options = JsonConvert.DeserializeObject<PcFieldText.PcFieldTextOptions>(Context.Node.Options);
 			if (context.Mode != ComponentMode.Options)
 			{
 				if (options.MaxLength == null)
 					options.MaxLength = baseOptions.MaxLength;
-
+  
 				if(String.IsNullOrWhiteSpace(options.LabelHelpText))
 					options.LabelHelpText = baseOptions.LabelHelpText;
-
+  
 				if (String.IsNullOrWhiteSpace(options.Description))
 					options.Description = baseOptions.Description;
-
+  
 			}
 			/*
 			* If link is present, evaluate the datasource and find the final link and assign to href
@@ -141,18 +147,18 @@ public partial class ReomiTextBox : ComponentBase
 		if (String.IsNullOrWhiteSpace(options.Placeholder) && context.Mode != ComponentMode.Options) {
 			options.Placeholder = model.Placeholder;
 		}
-
+  
 		//Implementing Inherit label mode
 		if (options.LabelMode == WvLabelRenderMode.Undefined &&
 		    baseOptions.LabelMode != WvLabelRenderMode.Undefined)
 			options.LabelMode = baseOptions.LabelMode;
-
+  
 		if (options.Mode == WvFieldRenderMode.Undefined && baseOptions.Mode != WvFieldRenderMode.Undefined)
 			options.Mode = baseOptions.Mode;
-
-
+  
+  
 		var componentMeta = new PageComponentLibraryService().GetComponentMeta(context.Node.ComponentName);
-
+  
 		var accessOverride = context.DataModel.GetPropertyValueByDataSource(options.AccessOverrideDs) as WvFieldAccess?;
 		if(accessOverride != null){
 			model.Access = accessOverride.Value;
@@ -171,15 +177,15 @@ public partial class ReomiTextBox : ComponentBase
 				}
 			}
 		}
-
+  
 		#endregion
-
+  
 		FieldOptions = options;
-
+  
 		if (context.Mode != ComponentMode.Options && context.Mode != ComponentMode.Help)
 		{
 			model.Value = context.DataModel.GetPropertyValueByDataSource(options.Value);
-
+  
 			var isVisible = true;
 			var isVisibleDS = context.DataModel.GetPropertyValueByDataSource(options.IsVisible);
 			if (isVisibleDS is string && !String.IsNullOrWhiteSpace(isVisibleDS.ToString()))
@@ -195,7 +201,7 @@ public partial class ReomiTextBox : ComponentBase
 			}
 			_isVisible = isVisible;
 		}
-
+  
 		_entity = BlazorPageComponentContext.ErpRequestContext.Entity;
     }
 }

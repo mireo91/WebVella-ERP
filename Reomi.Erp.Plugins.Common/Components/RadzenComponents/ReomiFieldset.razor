@@ -4,57 +4,27 @@
 @using Radzen.Blazor
 
 @inject NotificationService NotificationService
+@inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcSection.PcSectionOptions>
 @inject HttpClient Client
 
-<RadzenFieldset AllowCollapse="@FieldOptions.IsCollapsable" Collapsed="@FieldOptions.IsCollapsed" ExpandTitle="Expand fieldset." CollapseTitle="Collapse fieldset."
-                ExpandAriaLabel="Expand fieldset." CollapseAriaLabel="Collapse fieldset."
-                Expand=@(() => Change("Fieldset expanded")) Collapse=@(() => Change("Fieldset collapsed"))>
-    <HeaderTemplate>
-        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
-            @* <RadzenIcon Icon="account_box"/> *@
-            <b>@FieldOptions.Title</b>
-        </RadzenStack>
-    </HeaderTemplate>
-    <ChildContent>
-        @RenderNodes()
-        @* <Test></Test> *@
-        @* @ChildContent *@
-        @* @RenderNodes() *@
-        @* @dynamicComponent() *@
-        @* @await Html.PartialAsync("~/Components/PcSection/Design.cshtml") *@
-        @* <RadzenDataList PageSize="4" WrapItems="true" AllowPaging="true"  *@
-        @*                 Data="@orders" TItem="Order"> *@
-        @*     <Template Context="order"> *@
-        @*         <RadzenCard Style="width: 250px"> *@
-        @*             <RadzenStack Gap="1rem"> *@
-        @*                 <RadzenRow> *@
-        @*                     <RadzenColumn Size="8" class="rz-text-truncate"> *@
-        @*                         <RadzenBadge BadgeStyle="BadgeStyle.Light" Text=@($"{order.OrderID}") class="rz-me-1" /> *@
-        @*                         <b>@(order.ShipName)</b> *@
-        @*                     </RadzenColumn> *@
-        @*                     <RadzenColumn Size="4" class="rz-text-align-end"> *@
-        @*                         <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@($"{String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", order.Freight)}") /> *@
-        @*                     </RadzenColumn> *@
-        @*                 </RadzenRow> *@
-        @* *@
-        @*                 <hr style="border: none; background-color: var(--rz-base-600); height: 1px; margin: 0;" /> *@
-        @* *@
-        @*                 <RadzenStack Orientation="Orientation.Horizontal"> *@
-        @*                     <RadzenImage Path="@order.Employee?.Photo" Style="width: 80px; height: 80px; border-radius: 50%;" AlternateText="@(order.Employee?.FirstName + " " + order.Employee?.LastName)" /> *@
-        @*                     <RadzenStack Gap="0.25rem"> *@
-        @*                         <h4 class="rz-mb-0">@(order.Employee?.FirstName + " " + order.Employee?.LastName)</h4> *@
-        @*                         <div>@order.ShipAddress</div> *@
-        @*                         <div style="font-size: .8em">@(order.ShipCity), @(order.ShipCountry)</div> *@
-        @*                     </RadzenStack> *@
-        @*                 </RadzenStack> *@
-        @*             </RadzenStack> *@
-        @*         </RadzenCard> *@
-        @*     </Template> *@
-        @* </RadzenDataList> *@
-    </ChildContent>
-    @* <SummaryTemplate> *@
-    @*     <RadzenCard class="rz-mt-4"> *@
-    @*         <b>@orders.Count() Orders</b> *@
-    @*     </RadzenCard> *@
-    @* </SummaryTemplate> *@
-</RadzenFieldset>
+@if (IsVisible)
+{
+    <RadzenFieldset AllowCollapse="@FieldOptions.IsCollapsable" Collapsed="@FieldOptions.IsCollapsed" ExpandTitle="Expand fieldset." CollapseTitle="Collapse fieldset."
+                    ExpandAriaLabel="Expand fieldset." CollapseAriaLabel="Collapse fieldset."
+                    Expand=@(() => Change("Fieldset expanded")) Collapse=@(() => Change("Fieldset collapsed"))>
+        <HeaderTemplate>
+            <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
+                @* <RadzenIcon Icon="account_box"/> *@
+                <b>@FieldOptions.Title</b>
+            </RadzenStack>
+        </HeaderTemplate>
+        <ChildContent>
+            @RenderNodes()
+        </ChildContent>
+        @* <SummaryTemplate> *@
+        @*     <RadzenCard class="rz-mt-4"> *@
+        @*         <b>@orders.Count() Orders</b> *@
+        @*     </RadzenCard> *@
+        @* </SummaryTemplate> *@
+    </RadzenFieldset>
+}
