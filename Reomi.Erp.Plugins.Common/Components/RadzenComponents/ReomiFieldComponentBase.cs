@@ -6,6 +6,7 @@ using Radzen.Blazor;
 using WebVella.Erp.Api;
 using WebVella.Erp.Api.Models;
 using WebVella.Erp.Eql;
+using WebVella.Erp.Utilities.Dynamic;
 using WebVella.Erp.Web.Components;
 using WebVella.Erp.Web.Models;
 using WebVella.Erp.Web.Services;
@@ -91,11 +92,15 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
                 }
             }
         }
-        // if (FieldOptions.ConnectedEntityId != null)
-        // {
-	       //  
-        //     
-        // }
+
+        if (IsRequired)
+        {
+            prop = type.GetProperty("LabelText");
+            if (prop != null)
+            {
+                prop.SetValue(FieldOptions, $"{prop.GetValue(FieldOptions)}{"*"}");
+            }
+        }
     }
 
     // protected override void OnInitialized()
