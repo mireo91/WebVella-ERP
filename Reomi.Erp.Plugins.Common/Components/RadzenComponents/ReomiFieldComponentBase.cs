@@ -26,15 +26,18 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
     protected Entity? _entity = null;
     protected EntityRecord? _record = null;
 
-    protected string FieldName;
-    protected string FieldValue;
-
+    protected string? FieldName;
+    protected string? FieldValue;
+    private bool _isFirstTime = true;
+    
     protected override Task OnInitializedAsync()
     {
+        if(!_isFirstTime) return base.OnInitializedAsync();
+        _isFirstTime = false;
         if(FieldOptions == null)
             FieldOptions = InitializeFieldOptions();
 
-        FieldName = Context.Node.Id.ToString();
+        // FieldName = Context.Node.Id.ToString();
         
         if (Context?.FormData == null)
         {
@@ -46,26 +49,30 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
         if (prop != null)
         {
             FieldName = (string)prop.GetValue(FieldOptions)!;
-            FieldValue = (string)type.GetProperty("Value")!.GetValue(FieldOptions)!;
+            FieldValue = (string)type.GetProperty("Value")?.GetValue(FieldOptions)!;
         }
 
-        AfterOnInitialized();
-        Context.FormData!.Add(FieldName, FieldValue);
+        if (this is not ReomiCollectionComponentBase<TOptions>)
+        {
+            AfterOnInitialized();
+            Context.FormData!.Add(FieldName, FieldValue);
+        }
+
         return base.OnInitializedAsync();
     }
     
     protected virtual void AfterOnInitialized()
     {
-        // InitializeFieldOptions();
-        // Context.FormData = FieldOptions.Value;
-        if (BlazorPageComponentContext.ErpRequestContext.Entity != null)
+        _entity = BlazorPageComponentContext.ErpRequestContext.Entity;
+        if (_entity != null)
         {
             IsRequired = BlazorPageComponentContext.ErpRequestContext.Entity.Fields.Any(c => c.Name == FieldName && c.Required);
         }
         
+        var recordId = BlazorPageComponentContext.ErpRequestContext.RecordId;
         var type = typeof(TOptions);
         var prop = type.GetProperty("ConnectedEntityId");
-        if (prop != null)
+        if (prop != null && recordId != null)
         {
             var connectedEntityId = (Guid?)prop.GetValue(FieldOptions);
             if (connectedEntityId != null)
@@ -74,23 +81,21 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
                 if( response.Success )
                 {
                     _entity = response.Object;
-                    var field = _entity.Fields.Find(f => f.Name == FieldName);
-                
-                    //@todo dynamicznie w zależności od strony trzeba przypisać tą wartość
-                    var recordId = "f4d87b41-1fe1-48fe-b091-b2c7e566a8ee";
-                    //@endtodo
-                
-                    _record = new EqlCommand($"SELECT id, {FieldName} FROM {_entity.Name} WHERE id = @id", new EqlParameter("id", recordId)).Execute().FirstOrDefault();
-                    if (_record != null)
-                    {
-                        FieldValue = _record![FieldName] != null
-                            ? _record[FieldName].ToString()!
-                            : "";
-                    }
-
-                    IsRequired = _entity.Fields.Any(c => c.Name == FieldName && c.Required);
                 }
             }
+        }
+
+        if (_entity != null && recordId != null)
+        {
+            _record = new EqlCommand($"SELECT id, {FieldName} FROM {_entity.Name} WHERE id = @id", new EqlParameter("id", recordId.ToString())).Execute().FirstOrDefault();
+            if (_record != null)
+            {
+                FieldValue = _record![FieldName] != null
+                    ? _record[FieldName].ToString()!
+                    : "";
+            }
+
+            IsRequired = _entity.Fields.Any(c => c.Name == FieldName && c.Required);
         }
 
         if (IsRequired)

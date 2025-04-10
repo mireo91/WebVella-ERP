@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Radzen;
-using Radzen.Blazor;
-using Reomi.Erp.Plugins.Common.Hooks;
-using WebVella.Erp.Api;
-using WebVella.Erp.Api.Models;
 using WebVella.Erp.Web;
 using WebVella.Erp.Web.Components;
 using WebVella.Erp.Web.Models;
@@ -13,68 +9,46 @@ using WebVella.TagHelpers.Models;
 
 namespace Reomi.Erp.Plugins.Common.Components.RadzenComponents;
 
-public partial class ReomiTextBox : ReomiFieldComponentBase<PcFieldText.PcFieldTextOptions>
+public partial class ReomiHtmlEditor : ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcFieldHtml.PcFieldHtmlOptions>
 {
-    
-    // private bool _isRequired = false;
-    // private bool _isVisible = true;
-
-    protected override PcFieldText.PcFieldTextOptions InitializeFieldOptions()
+    protected override PcFieldHtml.PcFieldHtmlOptions InitializeFieldOptions()
     {
 	    var context = BlazorPageComponentContext.PageComponentContext;
-	    var pcFieldText = new PcFieldText(BlazorPageComponentContext.ErpRequestContext);
+	    var pcField = new PcFieldHtml(BlazorPageComponentContext.ErpRequestContext);
+
         #region << Init >>
 		
-		var baseOptions = pcFieldText.InitPcFieldBaseOptions(context);
-		var options = PcFieldText.PcFieldTextOptions.CopyFromBaseOptions(baseOptions);
+		var baseOptions = pcField.InitPcFieldBaseOptions(context);
+		var options = PcFieldHtml.PcFieldHtmlOptions.CopyFromBaseOptions(baseOptions);
 		if (Context.Node.Options != null)
 		{
-			options = JsonConvert.DeserializeObject<PcFieldText.PcFieldTextOptions>(Context.Node.Options);
+			options = JsonConvert.DeserializeObject<PcFieldHtml.PcFieldHtmlOptions>(Context.Node.Options.ToString());
 			if (context.Mode != ComponentMode.Options)
 			{
-				if (options.MaxLength == null)
-					options.MaxLength = baseOptions.MaxLength;
-  
-				if(String.IsNullOrWhiteSpace(options.LabelHelpText))
+				if (String.IsNullOrWhiteSpace(options.LabelHelpText))
 					options.LabelHelpText = baseOptions.LabelHelpText;
-  
+
 				if (String.IsNullOrWhiteSpace(options.Description))
 					options.Description = baseOptions.Description;
-  
-			}
-			/*
-			* If link is present, evaluate the datasource and find the final link and assign to href
-			* Feature: Linkable Text Field
-			*Author: Amarjeet-L
-			*/
-			string link = options.Link;
-			if (link != "")
-			{
-				link = context.DataModel.GetPropertyValueByDataSource(options.Link).ToString();
-				options.Href = link;
+
 			}
 		}
 		var modelFieldLabel = "";
-		var model = (PcFieldBase.PcFieldBaseModel)pcFieldText.InitPcFieldBaseModel(context,options, label: out modelFieldLabel);
+		var model = (PcFieldBase.PcFieldBaseModel)pcField.InitPcFieldBaseModel(context, options, label: out modelFieldLabel);
 		if (String.IsNullOrWhiteSpace(options.LabelText) && context.Mode != ComponentMode.Options)
 		{
 			options.LabelText = modelFieldLabel;
 		}
-		if (String.IsNullOrWhiteSpace(options.Placeholder) && context.Mode != ComponentMode.Options) {
-			options.Placeholder = model.Placeholder;
-		}
-  
-		//Implementing Inherit label mode
-		if (options.LabelMode == WvLabelRenderMode.Undefined &&
-		    baseOptions.LabelMode != WvLabelRenderMode.Undefined)
+
+		// ViewBag.LabelMode = options.LabelMode;
+		// ViewBag.Mode = options.Mode;
+
+		if (options.LabelMode == WvLabelRenderMode.Undefined && baseOptions.LabelMode != WvLabelRenderMode.Undefined)
 			options.LabelMode = baseOptions.LabelMode;
-  
+
 		if (options.Mode == WvFieldRenderMode.Undefined && baseOptions.Mode != WvFieldRenderMode.Undefined)
 			options.Mode = baseOptions.Mode;
-  
-  
-		// var componentMeta = new PageComponentLibraryService().GetComponentMeta(context.Node.ComponentName);
-  
+
 		var accessOverride = context.DataModel.GetPropertyValueByDataSource(options.AccessOverrideDs) as WvFieldAccess?;
 		if(accessOverride != null){
 			model.Access = accessOverride.Value;
@@ -93,13 +67,10 @@ public partial class ReomiTextBox : ReomiFieldComponentBase<PcFieldText.PcFieldT
 				}
 			}
 		}
-  
 		#endregion
-  
+
 		if (context.Mode != ComponentMode.Options && context.Mode != ComponentMode.Help)
 		{
-			model.Value = context.DataModel.GetPropertyValueByDataSource(options.Value);
-  
 			var isVisible = true;
 			var isVisibleDS = context.DataModel.GetPropertyValueByDataSource(options.IsVisible);
 			if (isVisibleDS is string && !String.IsNullOrWhiteSpace(isVisibleDS.ToString()))
@@ -114,8 +85,9 @@ public partial class ReomiTextBox : ReomiFieldComponentBase<PcFieldText.PcFieldT
 				isVisible = (bool)isVisibleDS;
 			}
 			IsVisible = isVisible;
-		}
 
+			// model.Value = context.DataModel.GetPropertyValueByDataSource(options.Value);
+		}
 		return options;
     }
 }

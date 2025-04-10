@@ -2,6 +2,7 @@
 @addTagHelper *, WebVella.TagHelpers
 @using System.Text
 @using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -15,6 +16,8 @@
 @using WebVella.Erp.Web.Models;
 @using WebVella.Erp.Web.Components
 @using WebVella.Erp.Web.Utils
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+
 @* @using BlazorPageComponentContext = Reomi.Erp.Plugins.Common.BlazorPageComponentContext *@
 @using RenderMode = Microsoft.AspNetCore.Mvc.Rendering.RenderMode
 @{
@@ -23,7 +26,8 @@
     var requestContext = (ErpRequestContext)ViewBag.RequestContext;
     BlazorPageComponentContext.ErpRequestContext = requestContext;
     BlazorPageComponentContext.PageComponentContext = componentContext;
+    var token = antiforgery.GetAndStoreTokens(requestContext.PageContext.HttpContext).RequestToken;
     // var blazorComponentContext = new BlazorPageComponentContext(componentContext, requestContext,node);
 }
 
-@(await Html.RenderComponentAsync<ReomiTemplateForm>(RenderMode.ServerPrerendered, new { Context = new BlazorPageComponentContext(node) }))
+@(await Html.RenderComponentAsync<ReomiTemplateForm>(RenderMode.ServerPrerendered, new { Context = new BlazorPageComponentContext(node) ,AntiforgeryToken = token }))

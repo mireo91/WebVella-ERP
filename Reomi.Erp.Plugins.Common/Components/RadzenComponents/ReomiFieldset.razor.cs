@@ -15,7 +15,7 @@ using static System.Net.Http.HttpMethod;
 
 namespace Reomi.Erp.Plugins.Common.Components.RadzenComponents;
 
-public partial class ReomiFieldset : ReomiFieldComponentBase<PcSection.PcSectionOptions>
+public partial class ReomiFieldset : ReomiCollectionComponentBase<PcSection.PcSectionOptions>
 {
    void Change(string text)
     {

@@ -1,19 +1,20 @@
+
 @using Microsoft.JSInterop
-@using WebVella.Erp.Api.Models;
 
 @inject IJSRuntime JSRuntime;
 @using Radzen
 @using Radzen.Blazor
 @using WebVella.TagHelpers.Models
 @using Microsoft.AspNetCore.Components.Sections
-@inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcFieldSelect.PcFieldSelectOptions>
+@inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcFieldTextarea.PcFieldTextareaOptions>
 
-@if(FieldOptions.Mode == WvFieldRenderMode.InlineEdit){
+@if(FieldOptions!.Mode == WvFieldRenderMode.InlineEdit){
     @inject NotificationService NotificationService
 }
 
 @if (IsVisible)
 {
+
     @switch (FieldOptions.Mode)
     {
         case WvFieldRenderMode.InlineEdit:
@@ -27,17 +28,6 @@
             break;
     }
 }
-@* @if (FieldOptions.LabelMode != WvLabelRenderMode.Hidden) *@
-@* { *@
-@*     $1$ <RadzenStack Orientation="@Orientation" Gap="0.5rem" class="@FieldOptions.Class"> #1# *@
-@*     $1$     <RadzenLabel Text="@FieldOptions.LabelText" Component="@FieldOptions.Name"/> #1# *@
-@*         <SectionOutlet SectionName="field-inline" /> *@
-@*     // </RadzenStack> *@
-@* } *@
-@* else *@
-@* { *@
-@*     <SectionOutlet SectionName="field" /> *@
-@* } *@
 
 <SectionContent SectionName=@("field-inline-"+Context.Node.Id)>
     <RadzenTemplateForm TItem="BlazorForm" Data=@Context.FormData Submit="OnSubmit" @ref="Form">
@@ -56,12 +46,11 @@
 </SectionContent>
 
 <SectionContent SectionName=@("field-form-" + Context.Node.Id)>
-    <input type="hidden" name=@FieldName value="@Context.FormData![FieldName]" />
-    <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@(FieldName + "-helper") Style="width:calc(100% - 88px);">
-        <RadzenDropDownDataGrid Data=@options TValue="string" AllowClear=@(!IsRequired) AllowSorting="false" @bind-Value=@Context.FormData![FieldName] LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Name="@(FieldName + "helper")"/>
+    <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined" Component=@FieldName Style="width:calc(100% - 88px);">
+        <RadzenTextArea @bind-Value=@Context.FormData![FieldName] MaxLength=@(FieldOptions.MaxLength==0?null:FieldOptions.MaxLength) Rows=@(int.Parse(FieldOptions.Height)) Name=@FieldName/>
         @if (IsRequired)
         {
-            <RadzenRequiredValidator Component=@(FieldName + "-helper") Text="Last name is required." Popup=true Style="position: absolute"/>
+            <RadzenRequiredValidator Component=@FieldName Text="This field is required." Popup=true Style="position: absolute"/>
         }
     </RadzenFormField>
     @* <RadzenDropDown AllowClear="true" @bind-Value=@FieldOptions.Value *@
@@ -69,8 +58,17 @@
     @*                 Data=@options TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Style="width: 100%; max-width: 400px;" Name="@FieldOptions.Name"/> *@
 </SectionContent>
 
-<SectionContent SectionName=@("field-display-"+Context.Node.Id)>
-    <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldName Style="width: calc(100% - 44px);">
-        <RadzenDropDownDataGrid Disabled="true" Data=@options TValue="string" AllowClear="false" AllowSorting="false" @bind-Value=@Context.FormData![FieldName] LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)"/>
+<SectionContent SectionName=@("field-display-" + Context.Node.Id)>
+    <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined" Style="width:calc(100% - 44px);">
+        <RadzenTextArea @bind-Value=@Context.FormData![FieldName] Disabled="true" Rows=@(int.Parse(FieldOptions.Height))/>
     </RadzenFormField>
 </SectionContent>
+
+<RadzenFormField Text="Credit Card Number" Variant="Variant.Outlined">
+    <Start>
+        <RadzenIcon Icon="credit_card" />
+    </Start>
+    <ChildContent>
+        <RadzenMask Mask="**** **** **** ****" CharacterPattern="[0-9]" Placeholder="0000 0000 0000 0000" Name="CardNr" bind-Value="" />
+    </ChildContent>
+</RadzenFormField>

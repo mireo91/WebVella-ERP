@@ -5,11 +5,11 @@
 @using Radzen.Blazor
 
 @inject NotificationService NotificationService
-@inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcForm.PcFormOptions>
-@inject HttpClient Client
+@inherits ReomiCollectionComponentBase<WebVella.Erp.Web.Components.PcForm.PcFormOptions>
 
-<div id=@(FieldOptions.Id != null ? FieldOptions.Id : Context.Node.Id)>
-    <RadzenTemplateForm TItem="BlazorForm" Data=@Context.FormData Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit Action=""Method="POST">
+<div id=@(FieldOptions!.Id)>
+    <RadzenTemplateForm TItem="BlazorForm" Data=@Context.FormData Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit Method=@(FieldOptions.Method) Action=@(Action)>
+        <input type="hidden" value=@AntiforgeryToken name="__RequestVerificationToken"/>
         @RenderNodes()
     </RadzenTemplateForm>
 </div>
