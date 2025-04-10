@@ -1,0 +1,14 @@
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JSRuntime;
+@using Radzen
+@using Radzen.Blazor
+@using WebVella.TagHelpers.Models
+@using Microsoft.AspNetCore.Components.Sections
+@using WebVella.Erp
+@inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcFieldHidden.PcFieldHiddenOptions>
+
+@if(IsVisible){
+    <input type="hidden" name=@FieldName value=@Context.FormData[FieldName] /> 
+}
+
