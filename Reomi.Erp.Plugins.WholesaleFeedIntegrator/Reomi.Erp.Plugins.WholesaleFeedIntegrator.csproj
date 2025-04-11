@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\WebVella.Erp.Web\WebVella.Erp.Web.csproj" />
+        <ProjectReference Include="..\WebVella.ERP\WebVella.Erp.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+<!--        <EmbeddedResource Include="Components\DataGrid\service.js" />-->
+        <EmbeddedResource Include="Snippets\**\*.cs" />
+        <EmbeddedResource Include="Snippets\**\*.html" />
+<!--        <EmbeddedResource Include="Components\HierarchicalOptionList\service.js" />-->
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Pages\" />
+    </ItemGroup>
+
+</Project>
