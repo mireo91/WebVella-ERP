@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using Radzen;
 using Reomi.Erp.Plugins.Common;
 using Reomi.Erp.Plugins.Sale;
+using Reomi.Erp.Plugins.WholesaleFeedIntegrator;
 
 namespace Reomi.Erp.Site.Sale
 {
@@ -54,6 +55,10 @@ namespace Reomi.Erp.Site.Sale
             services.AddRadzenComponents();
             services.AddServerSideBlazor();
             services.AddHttpClient();
+            services.AddHttpContextAccessor();
+            services.AddSignalR(e => {
+                e.MaximumReceiveMessageSize = 102400000;
+            });
             //CORS policy declaration
             //services.AddCors(options =>
             //{
@@ -188,6 +193,7 @@ namespace Reomi.Erp.Site.Sale
 			.UseErpPlugin<SdkPlugin>()
 			.UseErpPlugin<CommonPlugin>()
 			.UseErpPlugin<SalePlugin>()
+			.UseErpPlugin<WholesaleFeedIntegratorPlugin>()
             .UseErp()
             .UseErpMiddleware()
             .UseJwtMiddleware();
