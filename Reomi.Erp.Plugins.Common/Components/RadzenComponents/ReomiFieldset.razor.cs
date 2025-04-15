@@ -22,11 +22,11 @@ public partial class ReomiFieldset : ReomiCollectionComponentBase<PcSection.PcSe
         // Console.WriteLine($"{text}");
     }
 
-    private RenderFragment RenderNodes() =>
+    private RenderFragment RenderNodes(List<PageBodyNode> nodes) =>
         async builder =>
         {
             int nodeSequence = 0;
-            foreach (var node in Context.Node.Nodes)
+            foreach (var node in nodes)
             {
                 var helperType = Type.GetType(node.ComponentName);
                 var t = Type.GetType($"Reomi.Erp.Plugins.Common.Components.RadzenComponents.Reomi{helperType?.Name}");

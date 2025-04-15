@@ -22,6 +22,7 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
     
     protected bool IsVisible = true;
     protected bool IsRequired = false;
+    protected bool IsUnique = false;
     protected RadzenTemplateForm<BlazorForm>? Form;
     protected Entity? _entity = null;
     protected EntityRecord? _record = null;
@@ -64,10 +65,6 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
     protected virtual void AfterOnInitialized()
     {
         _entity = BlazorPageComponentContext.ErpRequestContext.Entity;
-        if (_entity != null)
-        {
-            IsRequired = BlazorPageComponentContext.ErpRequestContext.Entity.Fields.Any(c => c.Name == FieldName && c.Required);
-        }
         
         var recordId = BlazorPageComponentContext.ErpRequestContext.RecordId;
         var type = typeof(TOptions);
@@ -94,8 +91,12 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
                     ? _record[FieldName].ToString()!
                     : "";
             }
-
+        }
+        
+        if (_entity != null)
+        {
             IsRequired = _entity.Fields.Any(c => c.Name == FieldName && c.Required);
+            IsUnique = _entity.Fields.Any(c => c.Name == FieldName && c.Unique);
         }
 
         if (IsRequired)
@@ -138,7 +139,8 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
                 Duration = 4000
             };
         }
-        
+
+        FieldValue = formData[FieldName];
         NotificationService.Notify(message);
     }
     protected bool IsInlineEditable = false;
@@ -157,5 +159,15 @@ public abstract class ReomiFieldComponentBase<TOptions> : ComponentBase
     {
         IsInlineEditable = false;
         Context.FormData![FieldName] = FieldValue;
+    }
+    
+    protected bool IsUniqueValidator(object value)
+    {
+        if(_entity == null) return true;
+        if (new EqlCommand($"SELECT id, {FieldName} FROM {_entity.Name} WHERE {FieldName} = @value",new EqlParameter("value", value.ToString())).Execute().FirstOrDefault() != null)
+        {
+            return false;
+        }
+        return true;
     }
 }

@@ -58,9 +58,7 @@
 <SectionContent SectionName=@("field-form-" + Context.Node.Id)>
     <input type="hidden" name=@FieldName value="@Context.FormData![FieldName]" />
     <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@(FieldName + "-helper") Style="width:calc(100% - 88px);">
-        <RadzenDropDownDataGrid Data=@options TValue="string" AllowClear=@(!IsRequired) AllowSorting="false" @bind-Value=@Context.FormData![FieldName] LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Name="@(FieldName + "helper")">
-            
-        </RadzenDropDownDataGrid>
+        <RadzenDropDown Data=@options TValue="string" AllowClear=@(!IsRequired) AllowFiltering="true" @bind-Value=@Context.FormData![FieldName] LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Name="@(FieldName + "helper")" />
         @if (IsRequired)
         {
             <RadzenRequiredValidator Component=@(FieldName + "-helper") Text="Last name is required." Popup=true Style="position: absolute"/>
@@ -73,6 +71,6 @@
 
 <SectionContent SectionName=@("field-display-"+Context.Node.Id)>
     <RadzenFormField Text="@FieldOptions.LabelText" Variant="Variant.Outlined" Component=@FieldName Style="width: calc(100% - 44px);">
-        <RadzenDropDownDataGrid Disabled="true" Data=@options TValue="string" AllowClear="false" AllowSorting="false" @bind-Value=@Context.FormData![FieldName] LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)"/>
+        <RadzenDropDown Disabled="true" Data=@options TValue="string" AllowClear="false" AllowSorting="false" @bind-Value=@Context.FormData![FieldName] LoadData=@LoadData TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" />
     </RadzenFormField>
 </SectionContent>

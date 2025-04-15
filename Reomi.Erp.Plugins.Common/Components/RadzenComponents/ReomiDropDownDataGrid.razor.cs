@@ -18,9 +18,9 @@ using RecordManager = WebVella.Erp.Api.RecordManager;
 
 namespace Reomi.Erp.Plugins.Common.Components.RadzenComponents;
 
-public partial class ReomiGuidRelationDataGrid : ReomiFieldComponentBase<PcFieldSelect.PcFieldSelectOptions>
+public partial class ReomiDropDownDataGrid : ReomiFieldComponentBase<PcFieldSelect.PcFieldSelectOptions>
 {
-    [Parameter]
+   [Parameter]
     public List<SelectOption> Options { get; set; } = new List<SelectOption>();
 
     IEnumerable<SelectOption> options;

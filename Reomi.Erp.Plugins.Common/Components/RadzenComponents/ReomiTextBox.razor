@@ -6,6 +6,7 @@
 @using Radzen.Blazor
 @using WebVella.TagHelpers.Models
 @using Microsoft.AspNetCore.Components.Sections
+@using WebVella.Erp.Eql
 @inherits ReomiFieldComponentBase<WebVella.Erp.Web.Components.PcFieldText.PcFieldTextOptions>
 
 @if(FieldOptions!.Mode == WvFieldRenderMode.InlineEdit){
@@ -48,11 +49,15 @@
 <SectionContent SectionName=@("field-form-" + Context.Node.Id)>
     <RadzenFormField Text=@FieldOptions.LabelText Variant="Variant.Outlined" Component=@FieldName Style="width:calc(100% - 88px);">
         <RadzenTextBox @bind-Value=@Context.FormData![FieldName] MaxLength=@(FieldOptions.MaxLength==0?null:FieldOptions.MaxLength) Placeholder=@(FieldOptions.Placeholder) Name=@FieldName/>
-        @if (IsRequired)
-        {
-            <RadzenRequiredValidator Component=@FieldName Text="This field is required." Popup=true Style="position: absolute"/>
-        }
     </RadzenFormField>
+    @if (IsRequired)
+    {
+        <RadzenRequiredValidator Component=@FieldName Text="This field is required." Popup="false"/>
+    }
+    @if (IsUnique)
+    {
+        <RadzenCustomValidator Component=@FieldName Validator="@(() => IsUniqueValidator(Context.FormData![FieldName]))" Text="Field should be unique. Record with this value already exists!" Popup="false"/>
+    }
     @* <RadzenDropDown AllowClear="true" @bind-Value=@FieldOptions.Value *@
     @*                 LoadData=@LoadData AllowFiltering="true" Placeholder="@FieldOptions.Placeholder" *@
     @*                 Data=@options TextProperty="@nameof(SelectOption.Label)" ValueProperty="@nameof(SelectOption.Value)" Style="width: 100%; max-width: 400px;" Name="@FieldOptions.Name"/> *@

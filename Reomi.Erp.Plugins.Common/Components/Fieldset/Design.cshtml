@@ -1,1 +1,14 @@
+@addTagHelper *, WebVella.Erp.Plugins.Core
+@addTagHelper *, WebVella.Erp.Web
+@addTagHelper *, WebVella.TagHelpers
+@using WebVella.Erp.Web.Models;
+@using WebVella.TagHelpers.Models;
+@{
+    var node = (PageBodyNode)ViewBag.Node;
+}
 @await Html.PartialAsync("~/Components/PcSection/Design.cshtml")
+<wv-section id="wv-@(node.Id)" body-class="" class="" field-mode="@WvFieldRenderMode.Undefined"
+            label-mode="@WvLabelRenderMode.Undefined" is-card="false" is-collapsable="true" is-collapsed="true"
+            title="summary" title-tag="h5">
+    <wv-pb-node-container parent-node-id="@node.Id" container-id="summary"></wv-pb-node-container>
+</wv-section>

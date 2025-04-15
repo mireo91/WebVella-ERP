@@ -20,13 +20,11 @@
                 </RadzenStack>
             </HeaderTemplate>
             <ChildContent>
-                @RenderNodes()
+                @RenderNodes(Context.Node.Nodes.FindAll(n => n.ContainerId == "body"))
             </ChildContent>
-            @* <SummaryTemplate> *@
-            @*     <RadzenCard class="rz-mt-4"> *@
-            @*         <b>@orders.Count() Orders</b> *@
-            @*     </RadzenCard> *@
-            @* </SummaryTemplate> *@
+            <SummaryTemplate>
+                @RenderNodes(Context.Node.Nodes.FindAll(n => n.ContainerId == "summary"))
+            </SummaryTemplate>
         </RadzenFieldset>
 
 }
